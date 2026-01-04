@@ -1,0 +1,263 @@
+package org.example.web.templates
+
+import kotlinx.html.*
+import org.example.game.BattleSize
+import org.example.phase.*
+import org.example.web.SessionGameData
+
+/**
+ * Renders the home page with start game option.
+ */
+fun MAIN.renderHomePage(gameData: SessionGameData) {
+    section(classes = "hero-section") {
+        h1 { +"Warhammer 40,000" }
+        h2 { +"Game Guide" }
+        p { +"A step-by-step guide through the phases of battle" }
+
+        form {
+            method = FormMethod.post
+            action = "/start"
+
+            button {
+                type = ButtonType.submit
+                +"Start New Game"
+            }
+        }
+
+        // If there's an existing game in progress, show continue option
+        if (gameData.currentPhase != SetupPhase.MusterArmies) {
+            p {
+                a(href = "/phase") { +"Continue Current Game" }
+            }
+        }
+    }
+}
+
+/**
+ * Renders the main phase view with sidebar.
+ */
+fun MAIN.renderPhaseView(gameData: SessionGameData) {
+    div(classes = "game-layout") {
+        // Main content area
+        div {
+            id = "phase-content"
+            renderPhaseContentInner(gameData)
+        }
+
+        // Status sidebar
+        aside(classes = "status-sidebar") {
+            id = "status-sidebar"
+            renderGameStatus(gameData)
+        }
+    }
+}
+
+/**
+ * Renders just the phase content (for HTMX partial updates).
+ */
+fun HTML.renderPhaseContent(gameData: SessionGameData) {
+    body {
+        renderPhaseContentInner(gameData)
+    }
+}
+
+/**
+ * Inner function to render phase content.
+ */
+fun FlowContent.renderPhaseContentInner(gameData: SessionGameData) {
+    val phase = gameData.currentPhase
+    val state = gameData.state
+
+    article(classes = "phase-content") {
+        // Phase header
+        header(classes = "phase-header") {
+            div {
+                h2 { +phase.phaseName }
+
+                // Show turn info for battle phases
+                if (phase is BattlePhaseMarker && phase !is EndGamePhase) {
+                    p(classes = "turn-info") {
+                        +state.currentTurnDisplay()
+                    }
+                }
+            }
+
+            // Loading indicator for HTMX
+            span(classes = "htmx-indicator") {
+                span(classes = "loading")
+            }
+        }
+
+        // Phase guidance
+        div(classes = "guidance-text") {
+            +phase.displayGuidance(state)
+        }
+
+        // Action area
+        footer {
+            if (phase.requiresInput()) {
+                renderInputPhase(phase, state)
+            } else if (phase is EndGamePhase) {
+                renderEndGame()
+            } else {
+                renderContinueButton()
+            }
+        }
+    }
+}
+
+/**
+ * Renders input choices for phases that require selection.
+ */
+private fun FlowContent.renderInputPhase(phase: Phase, state: org.example.game.GameState) {
+    when (phase) {
+        is SetupPhase.MusterArmies -> {
+            form(classes = "choice-group") {
+                attributes["hx-post"] = "/phase/select"
+                attributes["hx-target"] = "#phase-content"
+                attributes["hx-swap"] = "innerHTML"
+                attributes["hx-indicator"] = ".htmx-indicator"
+
+                BattleSize.entries.forEachIndexed { index, size ->
+                    button(classes = "choice-button secondary outline") {
+                        type = ButtonType.submit
+                        name = "choice"
+                        value = (index + 1).toString()
+                        +"${index + 1}. ${size.name.replace("_", " ")} (${size.points} pts)"
+                    }
+                }
+            }
+        }
+
+        is SetupPhase.ReadMissionObjectives -> {
+            renderMissionSelector(SetupPhase.ReadMissionObjectives.availableMissions)
+        }
+
+        is SetupPhase.SelectAttackerSecondary -> {
+            p { +"Player ${state.attackerPlayerNumber} (ATTACKER) - Select Secondary Mission:" }
+            renderMissionSelector(SetupPhase.SelectAttackerSecondary.availableMissions)
+        }
+
+        is SetupPhase.SelectDefenderSecondary -> {
+            p { +"Player ${state.defenderPlayerNumber} (DEFENDER) - Select Secondary Mission:" }
+            renderMissionSelector(SetupPhase.SelectDefenderSecondary.availableMissions)
+        }
+
+        is SetupPhase.DetermineAttacker -> {
+            form(classes = "choice-group") {
+                attributes["hx-post"] = "/phase/select"
+                attributes["hx-target"] = "#phase-content"
+                attributes["hx-swap"] = "innerHTML"
+                attributes["hx-indicator"] = ".htmx-indicator"
+
+                button(classes = "choice-button secondary outline") {
+                    type = ButtonType.submit
+                    name = "choice"
+                    value = "1"
+                    +"Player 1 is the Attacker"
+                }
+                button(classes = "choice-button secondary outline") {
+                    type = ButtonType.submit
+                    name = "choice"
+                    value = "2"
+                    +"Player 2 is the Attacker"
+                }
+            }
+        }
+
+        is SetupPhase.DetermineFirstTurn -> {
+            form(classes = "choice-group") {
+                attributes["hx-post"] = "/phase/select"
+                attributes["hx-target"] = "#phase-content"
+                attributes["hx-swap"] = "innerHTML"
+                attributes["hx-indicator"] = ".htmx-indicator"
+
+                button(classes = "choice-button secondary outline") {
+                    type = ButtonType.submit
+                    name = "choice"
+                    value = "1"
+                    +"Player 1 goes first"
+                }
+                button(classes = "choice-button secondary outline") {
+                    type = ButtonType.submit
+                    name = "choice"
+                    value = "2"
+                    +"Player 2 goes first"
+                }
+            }
+        }
+
+        else -> {
+            // Generic fallback for any other input phase
+            renderContinueButton()
+        }
+    }
+}
+
+/**
+ * Renders a mission selector.
+ */
+private fun FlowContent.renderMissionSelector(missions: List<org.example.mission.Mission>) {
+    form(classes = "choice-group") {
+        attributes["hx-post"] = "/phase/select"
+        attributes["hx-target"] = "#phase-content"
+        attributes["hx-swap"] = "innerHTML"
+        attributes["hx-indicator"] = ".htmx-indicator"
+
+        missions.forEachIndexed { index, mission ->
+            button(classes = "choice-button secondary outline") {
+                type = ButtonType.submit
+                name = "choice"
+                value = (index + 1).toString()
+
+                val typeIndicator = when {
+                    mission.type.name.contains("ASYMMETRIC") -> " [ASYMMETRIC]"
+                    mission.type.name.contains("FIXED") -> " [FIXED]"
+                    else -> ""
+                }
+                +"${index + 1}. ${mission.name}$typeIndicator"
+            }
+        }
+    }
+}
+
+/**
+ * Renders the continue button for non-input phases.
+ */
+private fun FlowContent.renderContinueButton() {
+    div(classes = "action-buttons") {
+        button {
+            attributes["hx-post"] = "/phase/advance"
+            attributes["hx-target"] = "#phase-content"
+            attributes["hx-swap"] = "innerHTML"
+            attributes["hx-indicator"] = ".htmx-indicator"
+            +"Continue"
+        }
+
+        button(classes = "secondary outline") {
+            attributes["hx-post"] = "/reset"
+            attributes["hx-target"] = "#phase-content"
+            attributes["hx-swap"] = "innerHTML"
+            attributes["hx-confirm"] = "Are you sure you want to restart the game?"
+            +"Restart Game"
+        }
+    }
+}
+
+/**
+ * Renders end game options.
+ */
+private fun FlowContent.renderEndGame() {
+    div(classes = "action-buttons") {
+        a(href = "/") {
+            button { +"Return Home" }
+        }
+
+        button(classes = "secondary") {
+            attributes["hx-post"] = "/reset"
+            attributes["hx-target"] = "#phase-content"
+            attributes["hx-swap"] = "innerHTML"
+            +"Play Again"
+        }
+    }
+}

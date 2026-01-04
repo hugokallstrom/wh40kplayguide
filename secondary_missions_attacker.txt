@@ -1,0 +1,263 @@
+SECONDARY MISSION
+A TEMPTING TARGET
+
+WHEN DRAWN: Your opponent must select one objective in No Man's Land to be your Tempting Target objective marker.
+
+ANY BATTLE ROUND - VP SCORING
+WHEN: End of either player's turn.
+- You control your Tempting Target objective marker: 5 VP
+
+================================================================================
+
+SECONDARY MISSION
+RECOVER ASSETS
+
+WHEN DRAWN: If you are playing an Incursion mission, or if there are fewer than three units from your army on the battlefield, you can discard this card and draw a new Secondary Mission card.
+
+RECOVER ASSETS (ACTION)
+STARTS: Your Shooting phase.
+UNITS: Two or more units from your army, if each of those units is wholly within a different one of the following areas: your deployment zone; No Man's Land; your opponent's deployment zone.
+COMPLETES: End of your turn, if either two or three of those units are on the battlefield.
+IF COMPLETED: Those units recover assets.
+
+ANY BATTLE ROUND - VP SCORING
+WHEN: End of your turn or the end of the battle (whichever comes first).
+- Two of your units recovered assets this turn: 3 VP
+  OR
+- Three of your units recovered assets this turn: 5 VP
+
+================================================================================
+
+FIXED - SECONDARY MISSION
+ASSASSINATION
+
+ANY BATTLE ROUND - TACTICAL - VP SCORING
+WHEN: End of either player's turn.
+- One or more enemy CHARACTER models were destroyed this turn: 5 VP
+  OR
+- All enemy CHARACTER models have been destroyed during the battle: 5 VP
+
+ANY BATTLE ROUND - FIXED - VP SCORING
+WHEN: While this card is active.
+- Each time an enemy CHARACTER model with a Wounds characteristic of 4 or higher is destroyed: 4 VP
+- Each time an enemy CHARACTER model with a Wounds characteristic of less than 4 is destroyed: 3 VP
+
+================================================================================
+
+FIXED - SECONDARY MISSION
+CULL THE HORDE
+
+WHEN DRAWN: If there are no enemy units on the battlefield that satisfy the condition required to achieve this card, you can discard this card and draw a new Secondary Mission card.
+
+ANY BATTLE ROUND - TACTICAL - VP SCORING
+WHEN: End of either player's turn.
+- One or more enemy INFANTRY units with a Starting Strength of 13+ (including Attached units) were destroyed this turn: 5 VP
+
+ANY BATTLE ROUND - FIXED - VP SCORING
+WHEN: While this card is active.
+- Each time an enemy INFANTRY unit with a Starting Strength of 13+ (including Attached units) is destroyed: 5 VP
+
+================================================================================
+
+FIXED - SECONDARY MISSION
+BEHIND ENEMY LINES
+
+WHEN DRAWN: If it is the first battle round, you can draw a new Secondary Mission card and shuffle this card back into your Secondary Mission deck.
+
+ANY BATTLE ROUND - VP SCORING
+WHEN: End of your turn.
+- One unit from your army (excluding AIRCRAFT and Battle-shocked units) is wholly within your opponent's deployment zone: 3 VP
+  OR
+- Two or more units from your army (excluding AIRCRAFT and Battle-shocked units) are wholly within your opponent's deployment zone: 4 VP
+
+================================================================================
+
+SECONDARY MISSION
+AREA DENIAL
+
+ANY BATTLE ROUND - VP SCORING
+WHEN: End of your turn.
+- One or more units from your army (excluding AIRCRAFT and Battle-shocked units) are within 3" of the center of the battlefield, and there are no enemy units within 3" of the center of the battlefield: 2 VP
+  OR
+- One or more units from your army (excluding AIRCRAFT and Battle-shocked units) are within 3" of the center of the battlefield, and there are no enemy units within 6" of the center of the battlefield: 5 VP
+
+================================================================================
+
+FIXED - SECONDARY MISSION
+BRING IT DOWN
+
+WHEN DRAWN: If there are no enemy MONSTER or VEHICLE units on the battlefield, you can discard this card and draw a new Secondary Mission card.
+
+ANY BATTLE ROUND - TACTICAL - VP SCORING
+WHEN: End of either player's turn.
+- One or more enemy MONSTER or VEHICLE units were destroyed this turn: 4 VP
+
+ANY BATTLE ROUND - FIXED - VP SCORING
+WHEN: While this card is active.
+- Each time an enemy MONSTER or VEHICLE unit is destroyed: 2 VP
+  AND
+- The total of the Wounds characteristics of the models in that destroyed unit was 15+ (at its Starting Strength): +2 VP
+  AND
+- The total of the Wounds characteristics of the models in that destroyed unit was 20+ (at its Starting Strength): +2 VP
+
+================================================================================
+
+FIXED - SECONDARY MISSION
+CLEANSE
+
+CLEANSE (ACTION)
+STARTS: Your Shooting phase.
+UNITS: One or more units from your army within range of an objective marker that is not within your deployment zone.
+COMPLETES: End of your turn, if the unit performing this Action is still within range of the same objective marker and you control that objective marker.
+IF COMPLETED: That objective marker is cleansed by your army.
+
+ANY BATTLE ROUND - VP SCORING
+WHEN: End of your turn.
+- One objective marker was cleansed by your army this turn: 4 VP
+  OR
+- Two or more objective markers were cleansed by your army this turn: 4 VP (FIXED) / 5 VP (TACTICAL)
+
+================================================================================
+
+SECONDARY MISSION
+DISPLAY OF MIGHT
+
+WHEN DRAWN: If it is the first battle round, draw a new Secondary Mission card and shuffle this card back into your Secondary Mission deck.
+
+ANY BATTLE ROUND - VP SCORING
+WHEN: End of either player's turn.
+- There are more units from your army than from your opponent's army wholly within No Man's Land: 4 VP
+
+================================================================================
+
+SECONDARY MISSION
+DEFEND STRONGHOLD
+
+WHEN DRAWN: If it is the first battle round, draw a new Secondary Mission card and shuffle this card back into your Secondary Mission deck.
+
+SECOND BATTLE ROUND ONWARDS - VP SCORING
+WHEN: End of your opponent's turn or the end of the battle (whichever comes first).
+- You control one or more objective markers in your deployment zone: 3 VP
+
+================================================================================
+
+FIXED - SECONDARY MISSION
+ENGAGE ON ALL FRONTS
+
+If one or more units from your army (excluding AIRCRAFT and Battle-shocked units) are wholly within a table quarter, and those units are more than 6" away from the center of the battlefield, you have a presence in that table quarter.
+
+ANY BATTLE ROUND - VP SCORING
+WHEN: End of your turn.
+- You have a presence in two table quarters: 1 VP
+  OR
+- You have a presence in three table quarters: 2 VP
+  OR
+- You have a presence in four table quarters: 4 VP
+
+================================================================================
+
+FIXED - SECONDARY MISSION
+ESTABLISH LOCUS
+
+ESTABLISH LOCUS (ACTION)
+STARTS: Your Shooting phase.
+UNITS: One unit from your army.
+COMPLETES: End of your turn, if that unit is within your opponent's deployment zone or within 6" of the center of the battlefield.
+IF COMPLETED: Your unit establishes a locus.
+
+ANY BATTLE ROUND - VP SCORING
+WHEN: End of your turn.
+- Your unit established a locus this turn and is within 6" of the center of the battlefield: 2 VP
+  OR
+- Your unit established a locus this turn and is within your opponent's deployment zone: 4 VP
+
+================================================================================
+
+SECONDARY MISSION
+EXTEND BATTLE LINES
+
+ANY BATTLE ROUND - VP SCORING
+WHEN: End of your turn.
+- You control one or more objective markers within your deployment zone and one or more objective markers within No Man's Land: 4 VP
+  OR
+- You control one or more objective markers within No Man's Land: 2 VP
+
+================================================================================
+
+SECONDARY MISSION
+MARKED FOR DEATH
+
+WHEN DRAWN: Your opponent must select three units from their army on the battlefield. If there are only one or two units from their army on the battlefield, they must select those units. The selected units are your Alpha Target units. You can then select one unit from your opponent's army on the battlefield to be your Gamma Target unit. If there are no units from their army on the battlefield, discard this card and draw a new Secondary Mission card.
+
+ANY BATTLE ROUND - VP SCORING
+WHEN: End of either player's turn.
+- One or more of your Alpha Target units were destroyed (or removed from the battlefield for any other reason) this turn: 5 VP
+  OR
+- None of your Alpha Target units were destroyed (or removed from the battlefield for any other reason) this turn, but your Gamma Target unit was destroyed (or removed from the battlefield for any other reason) this turn: 2 VP
+
+================================================================================
+
+FIXED - SECONDARY MISSION
+NO PRISONERS
+
+ANY BATTLE ROUND - TACTICAL - VP SCORING
+WHEN: While this card is active.
+- Each time an enemy unit is destroyed: 2 VP (MAX 5VP)
+
+ANY BATTLE ROUND - FIXED - VP SCORING
+WHEN: While this card is active.
+- Each time an enemy Bodyguard unit or enemy non-CHARACTER unit is destroyed: 2 VP (MAX 5VP)
+
+================================================================================
+
+SECONDARY MISSION
+OVERWHELMING FORCE
+
+ANY BATTLE ROUND - VP SCORING
+WHEN: While this card is active.
+- Each time an enemy unit that started the turn within range of an objective marker is destroyed: 3 VP (MAX 5VP)
+
+================================================================================
+
+SECONDARY MISSION
+SABOTAGE
+
+SABOTAGE (ACTION)
+STARTS: Your Shooting phase.
+UNITS: One unit from your army that is within a terrain feature and not within your deployment zone.
+COMPLETES: End of your opponent's next turn or the end of the battle (whichever comes first), if your unit is on the battlefield.
+IF COMPLETED: Your unit commits sabotage.
+
+ANY BATTLE ROUND - VP SCORING
+WHEN: End of your opponent's turn or the end of the battle (whichever comes first).
+- Your unit committed sabotage this turn and is not within your opponent's deployment zone: 3 VP
+  OR
+- Your unit committed sabotage this turn and is within your opponent's deployment zone: 6 VP
+
+================================================================================
+
+SECONDARY MISSION
+SECURE NO MAN'S LAND
+
+ANY BATTLE ROUND - VP SCORING
+WHEN: End of your turn.
+- You control one objective marker in No Man's Land: 2 VP
+  OR
+- You control two or more objective markers in No Man's Land: 5 VP
+
+================================================================================
+
+FIXED - SECONDARY MISSION
+STORM HOSTILE OBJECTIVE
+
+WHEN DRAWN: If it is the first battle round, you can draw a new Secondary Mission card and shuffle this card back into your Secondary Mission deck.
+
+ANY BATTLE ROUND - VP SCORING
+WHEN: End of your turn.
+- You control one or more objective markers that were controlled by your opponent at the start of the turn: 4 VP
+
+SECOND BATTLE ROUND ONWARDS - VP SCORING
+WHEN: End of your turn.
+- Your opponent did not control any objective markers at the start of the turn, and you control one or more objective markers that you did not control at the start of the turn: 4 VP
+
+================================================================================
