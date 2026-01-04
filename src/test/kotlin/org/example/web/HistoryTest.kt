@@ -206,16 +206,18 @@ class HistoryTest {
         // First advance to a non-input phase
         testClient.post("/phase/select") {
             header("Content-Type", "application/x-www-form-urlencoded")
-            setBody("choice=1")
+            setBody("choice=1&version=0")
         }
         testClient.post("/phase/select") {
             header("Content-Type", "application/x-www-form-urlencoded")
-            setBody("choice=1")
+            setBody("choice=1&version=1")
         }
 
-        // HTMX request to advance
+        // HTMX request to advance (version=2 from previous selections)
         val response = testClient.post("/phase/advance") {
             header("HX-Request", "true")
+            header("Content-Type", "application/x-www-form-urlencoded")
+            setBody("version=2")
         }
 
         // Should have HX-Redirect header (not partial HTML)

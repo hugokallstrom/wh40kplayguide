@@ -67,6 +67,7 @@ fun HTML.renderPhaseContent(gameData: SessionGameData) {
 fun FlowContent.renderPhaseContentInner(gameData: SessionGameData) {
     val phase = gameData.currentPhase
     val state = gameData.state
+    val version = gameData.version
 
     article(classes = "phase-content") {
         // Phase header
@@ -96,11 +97,11 @@ fun FlowContent.renderPhaseContentInner(gameData: SessionGameData) {
         // Action area
         footer {
             if (phase.requiresInput()) {
-                renderInputPhase(phase, state)
+                renderInputPhase(phase, state, version)
             } else if (phase is EndGamePhase) {
-                renderEndGame()
+                renderEndGame(version)
             } else {
-                renderContinueButton()
+                renderContinueButton(version)
             }
         }
     }
@@ -108,8 +109,9 @@ fun FlowContent.renderPhaseContentInner(gameData: SessionGameData) {
 
 /**
  * Renders input choices for phases that require selection.
+ * @param version The current game version for browser history support
  */
-private fun FlowContent.renderInputPhase(phase: Phase, state: org.example.game.GameState) {
+private fun FlowContent.renderInputPhase(phase: Phase, state: org.example.game.GameState, version: Int) {
     when (phase) {
         is SetupPhase.MusterArmies -> {
             form(classes = "choice-group") {
@@ -117,6 +119,11 @@ private fun FlowContent.renderInputPhase(phase: Phase, state: org.example.game.G
                 attributes["hx-target"] = "#phase-content"
                 attributes["hx-swap"] = "innerHTML"
                 attributes["hx-indicator"] = ".htmx-indicator"
+
+                hiddenInput {
+                    name = "version"
+                    value = version.toString()
+                }
 
                 BattleSize.entries.forEachIndexed { index, size ->
                     button(classes = "choice-button secondary outline") {
@@ -130,17 +137,17 @@ private fun FlowContent.renderInputPhase(phase: Phase, state: org.example.game.G
         }
 
         is SetupPhase.ReadMissionObjectives -> {
-            renderMissionSelector(SetupPhase.ReadMissionObjectives.availableMissions)
+            renderMissionSelector(SetupPhase.ReadMissionObjectives.availableMissions, version)
         }
 
         is SetupPhase.SelectAttackerSecondary -> {
             p { +"Player ${state.attackerPlayerNumber} (ATTACKER) - Select Secondary Mission:" }
-            renderMissionSelector(SetupPhase.SelectAttackerSecondary.availableMissions)
+            renderMissionSelector(SetupPhase.SelectAttackerSecondary.availableMissions, version)
         }
 
         is SetupPhase.SelectDefenderSecondary -> {
             p { +"Player ${state.defenderPlayerNumber} (DEFENDER) - Select Secondary Mission:" }
-            renderMissionSelector(SetupPhase.SelectDefenderSecondary.availableMissions)
+            renderMissionSelector(SetupPhase.SelectDefenderSecondary.availableMissions, version)
         }
 
         is SetupPhase.DetermineAttacker -> {
@@ -149,6 +156,11 @@ private fun FlowContent.renderInputPhase(phase: Phase, state: org.example.game.G
                 attributes["hx-target"] = "#phase-content"
                 attributes["hx-swap"] = "innerHTML"
                 attributes["hx-indicator"] = ".htmx-indicator"
+
+                hiddenInput {
+                    name = "version"
+                    value = version.toString()
+                }
 
                 button(classes = "choice-button secondary outline") {
                     type = ButtonType.submit
@@ -172,6 +184,11 @@ private fun FlowContent.renderInputPhase(phase: Phase, state: org.example.game.G
                 attributes["hx-swap"] = "innerHTML"
                 attributes["hx-indicator"] = ".htmx-indicator"
 
+                hiddenInput {
+                    name = "version"
+                    value = version.toString()
+                }
+
                 button(classes = "choice-button secondary outline") {
                     type = ButtonType.submit
                     name = "choice"
@@ -189,20 +206,26 @@ private fun FlowContent.renderInputPhase(phase: Phase, state: org.example.game.G
 
         else -> {
             // Generic fallback for any other input phase
-            renderContinueButton()
+            renderContinueButton(version)
         }
     }
 }
 
 /**
  * Renders a mission selector.
+ * @param version The current game version for browser history support
  */
-private fun FlowContent.renderMissionSelector(missions: List<org.example.mission.Mission>) {
+private fun FlowContent.renderMissionSelector(missions: List<org.example.mission.Mission>, version: Int) {
     form(classes = "choice-group") {
         attributes["hx-post"] = "/phase/select"
         attributes["hx-target"] = "#phase-content"
         attributes["hx-swap"] = "innerHTML"
         attributes["hx-indicator"] = ".htmx-indicator"
+
+        hiddenInput {
+            name = "version"
+            value = version.toString()
+        }
 
         missions.forEachIndexed { index, mission ->
             button(classes = "choice-button secondary outline") {
@@ -223,14 +246,16 @@ private fun FlowContent.renderMissionSelector(missions: List<org.example.mission
 
 /**
  * Renders the continue button for non-input phases.
+ * @param version The current game version for browser history support
  */
-private fun FlowContent.renderContinueButton() {
+private fun FlowContent.renderContinueButton(version: Int) {
     div(classes = "action-buttons") {
         button {
             attributes["hx-post"] = "/phase/advance"
             attributes["hx-target"] = "#phase-content"
             attributes["hx-swap"] = "innerHTML"
             attributes["hx-indicator"] = ".htmx-indicator"
+            attributes["hx-vals"] = """{"version": "$version"}"""
             +"Continue"
         }
 
@@ -239,6 +264,7 @@ private fun FlowContent.renderContinueButton() {
             attributes["hx-target"] = "#phase-content"
             attributes["hx-swap"] = "innerHTML"
             attributes["hx-confirm"] = "Are you sure you want to restart the game?"
+            attributes["hx-vals"] = """{"version": "$version"}"""
             +"Restart Game"
         }
     }
@@ -246,8 +272,9 @@ private fun FlowContent.renderContinueButton() {
 
 /**
  * Renders end game options.
+ * @param version The current game version for browser history support
  */
-private fun FlowContent.renderEndGame() {
+private fun FlowContent.renderEndGame(version: Int) {
     div(classes = "action-buttons") {
         a(href = "/") {
             button { +"Return Home" }
@@ -257,6 +284,7 @@ private fun FlowContent.renderEndGame() {
             attributes["hx-post"] = "/reset"
             attributes["hx-target"] = "#phase-content"
             attributes["hx-swap"] = "innerHTML"
+            attributes["hx-vals"] = """{"version": "$version"}"""
             +"Play Again"
         }
     }

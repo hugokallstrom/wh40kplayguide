@@ -78,17 +78,20 @@ class WebServerTest {
         // First select battle size to get to ReadMissionObjectives
         client.post("/phase/select") {
             header("Content-Type", "application/x-www-form-urlencoded")
-            setBody("choice=2") // Strike Force
+            setBody("choice=2&version=0") // Strike Force
         }
 
         // Select a primary mission to get to DisplayMissionDetails (non-input)
         client.post("/phase/select") {
             header("Content-Type", "application/x-www-form-urlencoded")
-            setBody("choice=1")
+            setBody("choice=1&version=1")
         }
 
-        // Now advance should work
-        val response = client.post("/phase/advance")
+        // Now advance should work (version=2 from previous selections)
+        val response = client.post("/phase/advance") {
+            header("Content-Type", "application/x-www-form-urlencoded")
+            setBody("version=2")
+        }
         assertEquals(HttpStatusCode.Found, response.status)
     }
 

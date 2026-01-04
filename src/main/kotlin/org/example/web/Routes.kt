@@ -69,6 +69,13 @@ fun Application.configureRoutes(server: WebServer) {
         post("/phase/advance") {
             val session = call.getOrCreateSession()
             val gameData = server.getOrCreateGameData(session.sessionId)
+            val params = call.receiveParameters()
+
+            // Restore to the version the user was viewing (handles browser back/forward)
+            val submittedVersion = params["version"]?.toIntOrNull()
+            if (submittedVersion != null && submittedVersion != gameData.version) {
+                gameData.restoreSnapshot(submittedVersion)
+            }
 
             if (!gameData.currentPhase.requiresInput()) {
                 gameData.saveSnapshot()
@@ -94,6 +101,12 @@ fun Application.configureRoutes(server: WebServer) {
             val gameData = server.getOrCreateGameData(session.sessionId)
             val params = call.receiveParameters()
             val choice = params["choice"] ?: ""
+
+            // Restore to the version the user was viewing (handles browser back/forward)
+            val submittedVersion = params["version"]?.toIntOrNull()
+            if (submittedVersion != null && submittedVersion != gameData.version) {
+                gameData.restoreSnapshot(submittedVersion)
+            }
 
             if (gameData.currentPhase.requiresInput()) {
                 val nextPhase = gameData.currentPhase.processInput(choice, gameData.state)
