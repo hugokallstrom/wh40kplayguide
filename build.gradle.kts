@@ -2,6 +2,7 @@ plugins {
     kotlin("jvm") version "2.2.20"
     application
     kotlin("plugin.serialization") version "2.2.20"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 application {
@@ -39,6 +40,13 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+tasks.shadowJar {
+    archiveClassifier.set("all")
+    manifest {
+        attributes["Main-Class"] = "org.example.MainKt"
+    }
 }
 kotlin {
     jvmToolchain(19)
