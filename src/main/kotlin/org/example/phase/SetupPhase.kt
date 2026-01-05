@@ -2,6 +2,7 @@ package org.example.phase
 
 import org.example.game.BattleSize
 import org.example.game.GameState
+import org.example.guidance.GuidanceContent
 import org.example.mission.Mission
 
 /**
@@ -21,6 +22,30 @@ sealed class SetupPhase : SetupPhaseMarker {
             appendLine("1. Incursion  (1000 pts, battlefield 44\" x 60\", ~2 hours)")
             appendLine("2. Strike Force (2000 pts, battlefield 44\" x 60\", ~3 hours)")
             appendLine("3. Onslaught  (3000 pts, battlefield 44\" x 90\", ~4 hours)")
+        }
+
+        override fun displayStructuredGuidance(state: GameState): List<GuidanceContent> = buildList {
+            add(GuidanceContent.Table(
+                headers = listOf("Size", "Points", "Battlefield", "Duration"),
+                rows = listOf(
+                    listOf("Incursion", "1000 pts", "44\" x 60\"", "~2 hours"),
+                    listOf("Strike Force", "2000 pts", "44\" x 60\"", "~3 hours"),
+                    listOf("Onslaught", "3000 pts", "44\" x 90\"", "~4 hours")
+                )
+            ))
+
+            add(GuidanceContent.InfoBox(
+                title = "Army Construction",
+                content = listOf(
+                    GuidanceContent.BulletList(listOf(
+                        "All units must share army Faction keyword",
+                        "Max 3 of same datasheet (6 for Battleline/Dedicated Transport)",
+                        "Must include at least 1 Character",
+                        "Max 3 Enhancements total (Characters only)"
+                    ))
+                ),
+                variant = GuidanceContent.BoxVariant.REMINDER
+            ))
         }
 
         override fun requiresInput(): Boolean = true
@@ -70,7 +95,6 @@ sealed class SetupPhase : SetupPhaseMarker {
             state.primaryMission = selectedMission
             return DisplayMissionDetails(selectedMission)
         }
-
         override fun nextPhase(state: GameState): Phase = CreateBattlefield
     }
 
@@ -110,6 +134,43 @@ sealed class SetupPhase : SetupPhaseMarker {
             appendLine("(Deployment zones and detailed terrain layout handled externally)")
         }
 
+        override fun displayStructuredGuidance(state: GameState): List<GuidanceContent> = buildList {
+            add(GuidanceContent.KeyValue(listOf(
+                "Battle Size" to state.battleSize.name.replace("_", " "),
+                "Battlefield" to state.battleSize.battlefieldSize
+            )))
+
+            add(GuidanceContent.Paragraph("Set up terrain features and objective markers according to mission rules."))
+
+            state.primaryMission?.let { mission ->
+                if (mission.fullText.contains("objective marker", ignoreCase = true)) {
+                    val objectiveLines = mission.fullText.lines()
+                        .filter { it.contains("objective", ignoreCase = true) }
+                        .take(5)
+
+                    if (objectiveLines.isNotEmpty()) {
+                        add(GuidanceContent.InfoBox(
+                            title = "Mission Objective Setup",
+                            content = listOf(GuidanceContent.BulletList(objectiveLines)),
+                            variant = GuidanceContent.BoxVariant.INFO
+                        ))
+                    }
+                }
+            }
+
+            add(GuidanceContent.InfoBox(
+                title = "Terrain Guidelines",
+                content = listOf(
+                    GuidanceContent.BulletList(listOf(
+                        "Ruins block line of sight",
+                        "Woods: Units wholly within are never fully visible",
+                        "Benefit of Cover: +1 to armor saves vs ranged"
+                    ))
+                ),
+                variant = GuidanceContent.BoxVariant.REMINDER
+            ))
+        }
+
         override fun nextPhase(state: GameState): Phase = DetermineAttacker
     }
 
@@ -128,6 +189,27 @@ sealed class SetupPhase : SetupPhaseMarker {
             appendLine("Who won the roll-off?")
             appendLine("1. Player 1 is the Attacker")
             appendLine("2. Player 2 is the Attacker")
+        }
+
+        override fun displayStructuredGuidance(state: GameState): List<GuidanceContent> = buildList {
+            add(GuidanceContent.Paragraph("Both players roll off (D6)."))
+
+            add(GuidanceContent.KeyValue(listOf(
+                "Winner" to "becomes the ATTACKER",
+                "Loser" to "becomes the DEFENDER"
+            )))
+
+            add(GuidanceContent.InfoBox(
+                title = "Attacker Benefits",
+                content = listOf(
+                    GuidanceContent.BulletList(listOf(
+                        "Deploys units first",
+                        "Selects secondary mission first",
+                        "May have deployment zone advantages (mission-dependent)"
+                    ))
+                ),
+                variant = GuidanceContent.BoxVariant.INFO
+            ))
         }
 
         override fun requiresInput(): Boolean = true
@@ -258,6 +340,31 @@ sealed class SetupPhase : SetupPhaseMarker {
             appendLine("When both players are ready, declare your selections to your opponent.")
         }
 
+        override fun displayStructuredGuidance(state: GameState): List<GuidanceContent> = buildList {
+            add(GuidanceContent.Paragraph("Both players now secretly note down:"))
+
+            add(GuidanceContent.NumberedList(listOf(
+                "ATTACHED LEADERS - Which Leader units will start attached to which Bodyguard units",
+                "EMBARKED UNITS - Which units will start embarked within Transport models",
+                "RESERVES - Which units will start in Reserves (including Strategic Reserves)"
+            )))
+
+            add(GuidanceContent.InfoBox(
+                title = "Strategic Reserves Rules",
+                content = listOf(
+                    GuidanceContent.BulletList(listOf(
+                        "Max 25% of army points in Strategic Reserves",
+                        "Deep Strike units can be set up in Reserves",
+                        "Arrive from Round 2+ (wholly within 6\" of battlefield edge)",
+                        "Round 2: Cannot enter enemy deployment zone"
+                    ))
+                ),
+                variant = GuidanceContent.BoxVariant.REMINDER
+            ))
+
+            add(GuidanceContent.Paragraph("When both players are ready, declare your selections to your opponent."))
+        }
+
         override fun nextPhase(state: GameState): Phase = DeployArmies
     }
 
@@ -288,6 +395,38 @@ sealed class SetupPhase : SetupPhaseMarker {
             appendLine("  Infiltrators: Set up anywhere 9\"+ from enemy deployment zone and models")
         }
 
+        override fun displayStructuredGuidance(state: GameState): List<GuidanceContent> = buildList {
+            add(GuidanceContent.Paragraph("Players alternate deploying units, one at a time."))
+            add(GuidanceContent.NumberedList(listOf(
+                "Player ${state.attackerPlayerNumber} (ATTACKER) deploys first",
+                "Player ${state.defenderPlayerNumber} (DEFENDER) deploys next",
+                "Continue alternating until all units are deployed"
+            )))
+
+            add(GuidanceContent.InfoBox(
+                title = "Deployment Rules",
+                content = listOf(
+                    GuidanceContent.BulletList(listOf(
+                        "Models must be set up wholly within their deployment zone",
+                        "Continue until all units are deployed (or no room remains)"
+                    ))
+                ),
+                variant = GuidanceContent.BoxVariant.REMINDER
+            ))
+
+            add(GuidanceContent.InfoBox(
+                title = "Infiltrators",
+                content = listOf(
+                    GuidanceContent.Paragraph("After all other units deployed:"),
+                    GuidanceContent.BulletList(listOf(
+                        "Roll off - winner alternates setting up Infiltrators",
+                        "Set up anywhere 9\"+ from enemy deployment zone and models"
+                    ))
+                ),
+                variant = GuidanceContent.BoxVariant.INFO
+            ))
+        }
+
         override fun nextPhase(state: GameState): Phase = PreBattleRules
     }
 
@@ -311,6 +450,30 @@ sealed class SetupPhase : SetupPhaseMarker {
             appendLine("Note: If both players have Scouts units, the player going first moves theirs first.")
         }
 
+        override fun displayStructuredGuidance(state: GameState): List<GuidanceContent> = buildList {
+            add(GuidanceContent.Paragraph("Players alternate resolving any pre-battle rules, starting with the player who will take the first turn."))
+
+            add(GuidanceContent.InfoBox(
+                title = "Scouts X\"",
+                content = listOf(
+                    GuidanceContent.Paragraph("Before the first turn, unit can make a Normal move up to X\":"),
+                    GuidanceContent.BulletList(listOf(
+                        "Must end 9\"+ from all enemy models",
+                        "Dedicated Transports with only Scouts-equipped models can also Scout"
+                    ))
+                ),
+                variant = GuidanceContent.BoxVariant.INFO
+            ))
+
+            add(GuidanceContent.InfoBox(
+                title = "Note",
+                content = listOf(
+                    GuidanceContent.Paragraph("If both players have Scouts units, the player going first moves theirs first.")
+                ),
+                variant = GuidanceContent.BoxVariant.REMINDER
+            ))
+        }
+
         override fun nextPhase(state: GameState): Phase = DetermineFirstTurn
     }
 
@@ -326,6 +489,22 @@ sealed class SetupPhase : SetupPhaseMarker {
             appendLine("Who won the roll-off?")
             appendLine("1. Player 1 goes first")
             appendLine("2. Player 2 goes first")
+        }
+
+        override fun displayStructuredGuidance(state: GameState): List<GuidanceContent> = buildList {
+            add(GuidanceContent.Paragraph("Players roll off to determine who takes the first turn."))
+
+            add(GuidanceContent.InfoBox(
+                title = "First Turn Advantage",
+                content = listOf(
+                    GuidanceContent.BulletList(listOf(
+                        "First player moves and acts first each round",
+                        "Second player gets the final actions of each round",
+                        "Second player scores VP at end of turn in Round 5"
+                    ))
+                ),
+                variant = GuidanceContent.BoxVariant.INFO
+            ))
         }
 
         override fun requiresInput(): Boolean = true

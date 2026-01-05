@@ -2,6 +2,7 @@ package org.example.web.templates
 
 import kotlinx.html.*
 import org.example.game.BattleSize
+import org.example.guidance.HtmlRenderer
 import org.example.phase.*
 import org.example.web.SessionGameData
 
@@ -89,9 +90,9 @@ fun FlowContent.renderPhaseContentInner(gameData: SessionGameData) {
             }
         }
 
-        // Phase guidance
-        div(classes = "guidance-text") {
-            +phase.displayGuidance(state)
+        // Phase guidance - use structured content for rich HTML
+        div(classes = "guidance-content") {
+            HtmlRenderer.render(this, phase.displayStructuredGuidance(state))
         }
 
         // Action area

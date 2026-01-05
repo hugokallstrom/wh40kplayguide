@@ -1,6 +1,7 @@
 package org.example.phase
 
 import org.example.game.GameState
+import org.example.guidance.GuidanceContent
 
 /**
  * Represents a phase in the game that displays guidance and can transition to the next phase.
@@ -12,9 +13,18 @@ sealed interface Phase {
     val phaseName: String
 
     /**
-     * Returns the guidance text to display for this phase.
+     * Returns the guidance text to display for this phase (used by CLI).
      */
     fun displayGuidance(state: GameState): String
+
+    /**
+     * Returns structured guidance content for this phase (used by web).
+     * Default implementation wraps the plain text in a single Paragraph.
+     * Override this method to provide rich HTML rendering.
+     */
+    fun displayStructuredGuidance(state: GameState): List<GuidanceContent> {
+        return listOf(GuidanceContent.Paragraph(displayGuidance(state)))
+    }
 
     /**
      * Returns the next phase after this one.
