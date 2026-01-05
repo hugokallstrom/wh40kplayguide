@@ -52,7 +52,7 @@ data class SessionGameData(
 open class WebServer(
     private val primaryMissionsPath: String,
     private val secondaryMissionsPath: String,
-    private val port: Int = 8080
+    private val port: Int = System.getenv("PORT")?.toIntOrNull() ?: 8080
 ) {
     private val sessionGames = ConcurrentHashMap<String, SessionGameData>()
 
