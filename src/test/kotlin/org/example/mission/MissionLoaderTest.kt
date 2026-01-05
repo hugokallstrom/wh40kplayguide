@@ -155,4 +155,61 @@ Just a simple mission for testing file I/O.
         assertEquals(1, missions.size)
         assertEquals("Simple Test Mission", missions[0].name)
     }
+
+    // ========== Title Case Format Tests ==========
+
+    @Test
+    fun `parsePrimaryMissions handles title case headers`() {
+        primaryMissionsFile.writeText(TestFixtures.samplePrimaryMissionTitleCaseContent())
+        val missions = MissionLoader.loadPrimaryMissions(primaryMissionsFile.absolutePath)
+
+        assertEquals(3, missions.size)
+        assertTrue(missions.any { it.name == "Take and Hold" })
+        assertTrue(missions.any { it.name == "Supply Drop" })
+        assertTrue(missions.any { it.name == "Purge the Foe" })
+    }
+
+    @Test
+    fun `parsePrimaryMissions detects asymmetric type with title case`() {
+        primaryMissionsFile.writeText(TestFixtures.samplePrimaryMissionTitleCaseContent())
+        val missions = MissionLoader.loadPrimaryMissions(primaryMissionsFile.absolutePath)
+
+        val supplyDrop = missions.find { it.name == "Supply Drop" }
+        assertEquals(MissionType.PRIMARY_ASYMMETRIC, supplyDrop?.type)
+    }
+
+    @Test
+    fun `parsePrimaryMissions detects actions with title case`() {
+        primaryMissionsFile.writeText(TestFixtures.samplePrimaryMissionTitleCaseContent())
+        val missions = MissionLoader.loadPrimaryMissions(primaryMissionsFile.absolutePath)
+
+        val supplyDrop = missions.find { it.name == "Supply Drop" }
+        assertTrue(supplyDrop?.hasAction == true, "Supply Drop should have an action")
+
+        val takeAndHold = missions.find { it.name == "Take and Hold" }
+        assertFalse(takeAndHold?.hasAction == true, "Take and Hold should not have an action")
+    }
+
+    @Test
+    fun `parseSecondaryMissions handles title case headers`() {
+        secondaryMissionsFile.writeText(TestFixtures.sampleSecondaryMissionTitleCaseContent())
+        val missions = MissionLoader.loadSecondaryMissions(secondaryMissionsFile.absolutePath)
+
+        assertEquals(3, missions.size)
+        assertTrue(missions.any { it.name == "Engage on All Fronts" })
+        assertTrue(missions.any { it.name == "Assassination" })
+        assertTrue(missions.any { it.name == "Behind Enemy Lines" })
+    }
+
+    @Test
+    fun `parseSecondaryMissions detects FIXED type with title case`() {
+        secondaryMissionsFile.writeText(TestFixtures.sampleSecondaryMissionTitleCaseContent())
+        val missions = MissionLoader.loadSecondaryMissions(secondaryMissionsFile.absolutePath)
+
+        val assassination = missions.find { it.name == "Assassination" }
+        assertEquals(MissionType.SECONDARY_FIXED, assassination?.type)
+
+        val engage = missions.find { it.name == "Engage on All Fronts" }
+        assertEquals(MissionType.SECONDARY, engage?.type)
+    }
 }

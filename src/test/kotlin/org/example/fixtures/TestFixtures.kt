@@ -212,6 +212,74 @@ Score VP for having units in the enemy deployment zone.
     """.trimIndent()
 
     /**
+     * Returns sample primary mission file content in new Title Case format.
+     */
+    fun samplePrimaryMissionTitleCaseContent(): String = """
+Primary Mission
+Take and Hold
+
+**Second Battle Round Onwards - VP Scoring**
+**When:** End of the Command phase.
+
+The player whose turn it is scores:
+- For each objective marker that they control: 5 VP (MAX 15VP)
+
+================================================================================
+
+Primary Mission - Asymmetric War
+Supply Drop
+
+**Start of the Battle:** Players randomly select two different objective markers.
+
+**Supply Drop (Action)**
+**When:** Your Shooting phase.
+**Units:** One unit from your army within range of an objective marker.
+
+================================================================================
+
+Primary Mission
+Purge the Foe
+
+**Second Battle Round Onwards - VP Scoring**
+**When:** End of the battle round.
+
+Each player scores:
+- If one or more enemy units were destroyed this battle round: 4 VP
+    """.trimIndent()
+
+    /**
+     * Returns sample secondary mission file content in new Title Case format.
+     */
+    fun sampleSecondaryMissionTitleCaseContent(): String = """
+Secondary Mission
+Engage on All Fronts
+
+**Any Battle Round - VP Scoring**
+**When:** End of your turn.
+- You have a presence in two table quarters: 1 VP
+  OR
+- You have a presence in three table quarters: 2 VP
+
+================================================================================
+
+Fixed - Secondary Mission
+Assassination
+
+**Any Battle Round - Tactical - VP Scoring**
+**When:** End of either player's turn.
+- One or more enemy *Character* models were destroyed this turn: 5 VP
+
+================================================================================
+
+Secondary Mission
+Behind Enemy Lines
+
+**Any Battle Round - VP Scoring**
+**When:** End of your turn.
+- One unit from your army (excluding *Aircraft*) is wholly within your opponent's deployment zone: 3 VP
+    """.trimIndent()
+
+    /**
      * Returns empty mission content for edge case testing.
      */
     fun emptyMissionContent(): String = ""

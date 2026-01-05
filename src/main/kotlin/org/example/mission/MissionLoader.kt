@@ -25,30 +25,30 @@ object MissionLoader {
 
     /**
      * Parses primary missions from text content.
-     * Missions are separated by "PRIMARY MISSION" or "PRIMARY MISSION - ASYMMETRIC WAR" headers.
+     * Missions are separated by "Primary Mission" or "PRIMARY MISSION" headers (case-insensitive).
      */
     private fun parsePrimaryMissions(content: String): List<Mission> {
         val missions = mutableListOf<Mission>()
 
-        // Split by PRIMARY MISSION headers
-        val pattern = Regex("""(?=PRIMARY MISSION(?:\s*-\s*ASYMMETRIC WAR)?\s*\n)""")
+        // Split by Primary Mission headers (case-insensitive)
+        val pattern = Regex("""(?=Primary Mission(?:\s*-\s*Asymmetric War)?\s*\n)""", RegexOption.IGNORE_CASE)
         val sections = content.split(pattern).filter { it.isNotBlank() }
 
         for (section in sections) {
             val lines = section.lines().map { it.trim() }.filter { it.isNotEmpty() }
             if (lines.isEmpty()) continue
 
-            // Determine type
-            val isAsymmetric = lines[0].contains("ASYMMETRIC WAR")
+            // Determine type (case-insensitive check)
+            val isAsymmetric = lines[0].contains("Asymmetric War", ignoreCase = true)
             val type = if (isAsymmetric) MissionType.PRIMARY_ASYMMETRIC else MissionType.PRIMARY
 
             // Get mission name (second non-empty line after header)
-            val nameIndex = if (lines[0].startsWith("PRIMARY MISSION")) 1 else 0
+            val nameIndex = if (lines[0].startsWith("Primary Mission", ignoreCase = true)) 1 else 0
             if (nameIndex >= lines.size) continue
             val name = lines[nameIndex]
 
-            // Check for actions
-            val hasAction = section.contains("(ACTION)")
+            // Check for actions (case-insensitive, matches "(Action)" or "(ACTION)")
+            val hasAction = section.contains("(Action)", ignoreCase = true)
 
             // Get full text (everything after the name)
             val fullText = lines.drop(nameIndex + 1).joinToString("\n")
@@ -66,7 +66,7 @@ object MissionLoader {
 
     /**
      * Parses secondary missions from text content.
-     * Missions are separated by "SECONDARY MISSION" or "FIXED - SECONDARY MISSION" headers,
+     * Missions are separated by "Secondary Mission" or "Fixed - Secondary Mission" headers (case-insensitive),
      * with "=" separator lines between missions.
      */
     private fun parseSecondaryMissions(content: String): List<Mission> {
@@ -79,20 +79,20 @@ object MissionLoader {
             val lines = section.lines().map { it.trim() }.filter { it.isNotEmpty() }
             if (lines.isEmpty()) continue
 
-            // Determine type from header
+            // Determine type from header (case-insensitive)
             val headerLine = lines[0]
-            val isFixed = headerLine.startsWith("FIXED")
+            val isFixed = headerLine.startsWith("Fixed", ignoreCase = true)
             val type = if (isFixed) MissionType.SECONDARY_FIXED else MissionType.SECONDARY
 
-            // Skip if not a mission header
-            if (!headerLine.contains("SECONDARY MISSION")) continue
+            // Skip if not a mission header (case-insensitive)
+            if (!headerLine.contains("Secondary Mission", ignoreCase = true)) continue
 
             // Get mission name (line after header)
             if (lines.size < 2) continue
             val name = lines[1]
 
-            // Check for actions
-            val hasAction = section.contains("(ACTION)")
+            // Check for actions (case-insensitive)
+            val hasAction = section.contains("(Action)", ignoreCase = true)
 
             // Get full text (everything after the name)
             val fullText = lines.drop(2).joinToString("\n")

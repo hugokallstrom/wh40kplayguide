@@ -26,6 +26,9 @@ A Kotlin-based Warhammer bot project using Gradle as the build system.
 
 # Clean build artifacts
 ./gradlew clean
+
+# Stop the running server
+pkill -f "gradlew" 2>/dev/null; echo "Stopped server"
 ```
 
 ## Technical Stack

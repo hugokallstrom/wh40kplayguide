@@ -68,21 +68,13 @@ sealed class SetupPhase : SetupPhaseMarker {
      * Step 2: Read Mission Objectives - Select primary mission
      */
     data object ReadMissionObjectives : SetupPhase() {
-        override val phaseName = "READ MISSION OBJECTIVES"
+        override val phaseName = "Select Primary Mission"
 
         // Missions will be passed in via the CLI runner
         var availableMissions: List<Mission> = emptyList()
 
         override fun displayGuidance(state: GameState): String = buildString {
-            appendLine("Select Primary Mission:")
-            appendLine()
-            availableMissions.forEachIndexed { index, mission ->
-                val typeIndicator = when {
-                    mission.type.name.contains("ASYMMETRIC") -> " [ASYMMETRIC]"
-                    else -> ""
-                }
-                appendLine("${index + 1}. ${mission.name}$typeIndicator")
-            }
+            appendLine("Draw a card from the primary mission deck. Select the mission below:")
         }
 
         override fun requiresInput(): Boolean = true
