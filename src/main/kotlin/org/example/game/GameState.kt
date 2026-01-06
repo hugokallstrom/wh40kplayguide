@@ -10,6 +10,14 @@ enum class BattleSize(val points: Int, val battlefieldSize: String, val duration
 }
 
 /**
+ * Secondary mission type - Fixed or Tactical.
+ */
+enum class SecondaryMissionType {
+    FIXED,
+    TACTICAL
+}
+
+/**
  * Tracks the current state of the game.
  * Note: This is a minimal state tracker - VP/CP are tracked manually by players.
  */
@@ -18,8 +26,28 @@ data class GameState(
     var currentRound: Int = 0,
     var activePlayerNumber: Int = 1,  // 1 or 2
     var firstPlayerNumber: Int = 1,   // Who goes first each round (set after roll-off)
-    var attackerPlayerNumber: Int = 1 // Who is the attacker (set after roll-off)
+    var attackerPlayerNumber: Int = 1, // Who is the attacker (set after roll-off)
+    var player1SecondaryType: SecondaryMissionType? = null, // Player 1's secondary mission choice
+    var player2SecondaryType: SecondaryMissionType? = null  // Player 2's secondary mission choice
 ) {
+    /**
+     * Gets the secondary mission type for a specific player.
+     */
+    fun getSecondaryTypeForPlayer(playerNumber: Int): SecondaryMissionType? {
+        return if (playerNumber == 1) player1SecondaryType else player2SecondaryType
+    }
+
+    /**
+     * Sets the secondary mission type for a specific player.
+     */
+    fun setSecondaryTypeForPlayer(playerNumber: Int, type: SecondaryMissionType) {
+        if (playerNumber == 1) {
+            player1SecondaryType = type
+        } else {
+            player2SecondaryType = type
+        }
+    }
+
     /**
      * Returns the player number of the defender.
      */

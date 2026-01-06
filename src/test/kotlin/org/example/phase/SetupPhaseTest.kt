@@ -2,6 +2,7 @@ package org.example.phase
 
 import org.example.fixtures.TestFixtures
 import org.example.game.BattleSize
+import org.example.game.SecondaryMissionType
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -108,28 +109,88 @@ class SetupPhaseTest {
     // ========== DrawAttackerSecondary Tests ==========
 
     @Test
-    fun `DrawAttackerSecondary does not require input`() {
-        assertTrue(!SetupPhase.DrawAttackerSecondary.requiresInput())
+    fun `DrawAttackerSecondary requires input`() {
+        assertTrue(SetupPhase.DrawAttackerSecondary.requiresInput())
+    }
+
+    @Test
+    fun `DrawAttackerSecondary sets FIXED for input 1`() {
+        val state = TestFixtures.defaultGameState()
+        state.attackerPlayerNumber = 1
+
+        val nextPhase = SetupPhase.DrawAttackerSecondary.processInput("1", state)
+
+        assertEquals(SecondaryMissionType.FIXED, state.getSecondaryTypeForPlayer(1))
+        assertNotNull(nextPhase)
+    }
+
+    @Test
+    fun `DrawAttackerSecondary sets TACTICAL for input 2`() {
+        val state = TestFixtures.defaultGameState()
+        state.attackerPlayerNumber = 1
+
+        val nextPhase = SetupPhase.DrawAttackerSecondary.processInput("2", state)
+
+        assertEquals(SecondaryMissionType.TACTICAL, state.getSecondaryTypeForPlayer(1))
+        assertNotNull(nextPhase)
+    }
+
+    @Test
+    fun `DrawAttackerSecondary returns null for invalid input`() {
+        val state = TestFixtures.defaultGameState()
+
+        assertNull(SetupPhase.DrawAttackerSecondary.processInput("3", state))
+        assertNull(SetupPhase.DrawAttackerSecondary.processInput("invalid", state))
     }
 
     @Test
     fun `DrawAttackerSecondary advances to DrawDefenderSecondary`() {
         val state = TestFixtures.defaultGameState()
-        val nextPhase = SetupPhase.DrawAttackerSecondary.nextPhase(state)
+        val nextPhase = SetupPhase.DrawAttackerSecondary.processInput("1", state)
         assertIs<SetupPhase.DrawDefenderSecondary>(nextPhase)
     }
 
     // ========== DrawDefenderSecondary Tests ==========
 
     @Test
-    fun `DrawDefenderSecondary does not require input`() {
-        assertTrue(!SetupPhase.DrawDefenderSecondary.requiresInput())
+    fun `DrawDefenderSecondary requires input`() {
+        assertTrue(SetupPhase.DrawDefenderSecondary.requiresInput())
+    }
+
+    @Test
+    fun `DrawDefenderSecondary sets FIXED for input 1`() {
+        val state = TestFixtures.defaultGameState()
+        state.attackerPlayerNumber = 1 // So defender is player 2
+
+        val nextPhase = SetupPhase.DrawDefenderSecondary.processInput("1", state)
+
+        assertEquals(SecondaryMissionType.FIXED, state.getSecondaryTypeForPlayer(2))
+        assertNotNull(nextPhase)
+    }
+
+    @Test
+    fun `DrawDefenderSecondary sets TACTICAL for input 2`() {
+        val state = TestFixtures.defaultGameState()
+        state.attackerPlayerNumber = 1 // So defender is player 2
+
+        val nextPhase = SetupPhase.DrawDefenderSecondary.processInput("2", state)
+
+        assertEquals(SecondaryMissionType.TACTICAL, state.getSecondaryTypeForPlayer(2))
+        assertNotNull(nextPhase)
+    }
+
+    @Test
+    fun `DrawDefenderSecondary returns null for invalid input`() {
+        val state = TestFixtures.defaultGameState()
+
+        assertNull(SetupPhase.DrawDefenderSecondary.processInput("3", state))
+        assertNull(SetupPhase.DrawDefenderSecondary.processInput("invalid", state))
     }
 
     @Test
     fun `DrawDefenderSecondary advances to DeclareBattleFormations`() {
         val state = TestFixtures.defaultGameState()
-        val nextPhase = SetupPhase.DrawDefenderSecondary.nextPhase(state)
+        val nextPhase = SetupPhase.DrawDefenderSecondary.processInput("1", state)
         assertIs<SetupPhase.DeclareBattleFormations>(nextPhase)
     }
 

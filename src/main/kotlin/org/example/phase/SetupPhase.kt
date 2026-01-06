@@ -2,6 +2,7 @@ package org.example.phase
 
 import org.example.game.BattleSize
 import org.example.game.GameState
+import org.example.game.SecondaryMissionType
 import org.example.guidance.GuidanceContent
 
 /**
@@ -177,8 +178,10 @@ sealed class SetupPhase : SetupPhaseMarker {
         override fun displayGuidance(state: GameState): String = buildString {
             appendLine("Attacker (Player ${state.attackerPlayerNumber}):")
             appendLine()
-            appendLine("Select Fixed or Tactical secondary missions.")
-            appendLine("Refer to your mission cards for details.")
+            appendLine("Select your secondary mission type:")
+            appendLine()
+            appendLine("1. Fixed - Choose specific missions that remain the same all game")
+            appendLine("2. Tactical - Draw from a deck, replacing missions as you complete them")
         }
 
         override fun displayStructuredGuidance(state: GameState): List<GuidanceContent> = buildList {
@@ -186,12 +189,32 @@ sealed class SetupPhase : SetupPhaseMarker {
                 GuidanceContent.InfoBox(
                     title = "Attacker (Player ${state.attackerPlayerNumber})",
                     content = listOf(
-                        GuidanceContent.Paragraph("Select **Fixed** or **Tactical** secondary missions."),
-                        GuidanceContent.Paragraph("Refer to your mission cards for details.")
+                        GuidanceContent.Paragraph("Select your secondary mission type:")
                     ),
                     variant = GuidanceContent.BoxVariant.INFO
                 )
             )
+
+            add(
+                GuidanceContent.KeyValue(
+                    listOf(
+                        "1. Fixed" to "Choose specific missions that remain the same all game",
+                        "2. Tactical" to "Draw from a deck, replacing missions as you complete them"
+                    )
+                )
+            )
+        }
+
+        override fun requiresInput(): Boolean = true
+
+        override fun processInput(input: String, state: GameState): Phase? {
+            val type = when (input.trim()) {
+                "1" -> SecondaryMissionType.FIXED
+                "2" -> SecondaryMissionType.TACTICAL
+                else -> return null
+            }
+            state.setSecondaryTypeForPlayer(state.attackerPlayerNumber, type)
+            return DrawDefenderSecondary
         }
 
         override fun nextPhase(state: GameState): Phase = DrawDefenderSecondary
@@ -206,8 +229,10 @@ sealed class SetupPhase : SetupPhaseMarker {
         override fun displayGuidance(state: GameState): String = buildString {
             appendLine("Defender (Player ${state.defenderPlayerNumber}):")
             appendLine()
-            appendLine("Select Fixed or Tactical secondary missions.")
-            appendLine("Refer to your mission cards for details.")
+            appendLine("Select your secondary mission type:")
+            appendLine()
+            appendLine("1. Fixed - Choose specific missions that remain the same all game")
+            appendLine("2. Tactical - Draw from a deck, replacing missions as you complete them")
         }
 
         override fun displayStructuredGuidance(state: GameState): List<GuidanceContent> = buildList {
@@ -215,12 +240,32 @@ sealed class SetupPhase : SetupPhaseMarker {
                 GuidanceContent.InfoBox(
                     title = "Defender (Player ${state.defenderPlayerNumber})",
                     content = listOf(
-                        GuidanceContent.Paragraph("Select **Fixed** or **Tactical** secondary missions."),
-                        GuidanceContent.Paragraph("Refer to your mission cards for details.")
+                        GuidanceContent.Paragraph("Select your secondary mission type:")
                     ),
                     variant = GuidanceContent.BoxVariant.INFO
                 )
             )
+
+            add(
+                GuidanceContent.KeyValue(
+                    listOf(
+                        "1. Fixed" to "Choose specific missions that remain the same all game",
+                        "2. Tactical" to "Draw from a deck, replacing missions as you complete them"
+                    )
+                )
+            )
+        }
+
+        override fun requiresInput(): Boolean = true
+
+        override fun processInput(input: String, state: GameState): Phase? {
+            val type = when (input.trim()) {
+                "1" -> SecondaryMissionType.FIXED
+                "2" -> SecondaryMissionType.TACTICAL
+                else -> return null
+            }
+            state.setSecondaryTypeForPlayer(state.defenderPlayerNumber, type)
+            return DeclareBattleFormations
         }
 
         override fun nextPhase(state: GameState): Phase = DeclareBattleFormations
