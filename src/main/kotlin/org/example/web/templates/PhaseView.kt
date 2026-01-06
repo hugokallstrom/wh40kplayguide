@@ -164,6 +164,60 @@ private fun FlowContent.renderInputPhase(phase: Phase, state: org.example.game.G
             }
         }
 
+        is SetupPhase.DrawAttackerSecondary -> {
+            form(classes = "choice-group") {
+                attributes["hx-post"] = "/phase/select"
+                attributes["hx-target"] = "#phase-content"
+                attributes["hx-swap"] = "innerHTML"
+                attributes["hx-indicator"] = ".htmx-indicator"
+
+                hiddenInput {
+                    name = "version"
+                    value = version.toString()
+                }
+
+                button(classes = "choice-button secondary outline") {
+                    type = ButtonType.submit
+                    name = "choice"
+                    value = "1"
+                    +"1. Fixed"
+                }
+                button(classes = "choice-button secondary outline") {
+                    type = ButtonType.submit
+                    name = "choice"
+                    value = "2"
+                    +"2. Tactical"
+                }
+            }
+        }
+
+        is SetupPhase.DrawDefenderSecondary -> {
+            form(classes = "choice-group") {
+                attributes["hx-post"] = "/phase/select"
+                attributes["hx-target"] = "#phase-content"
+                attributes["hx-swap"] = "innerHTML"
+                attributes["hx-indicator"] = ".htmx-indicator"
+
+                hiddenInput {
+                    name = "version"
+                    value = version.toString()
+                }
+
+                button(classes = "choice-button secondary outline") {
+                    type = ButtonType.submit
+                    name = "choice"
+                    value = "1"
+                    +"1. Fixed"
+                }
+                button(classes = "choice-button secondary outline") {
+                    type = ButtonType.submit
+                    name = "choice"
+                    value = "2"
+                    +"2. Tactical"
+                }
+            }
+        }
+
         is SetupPhase.DetermineFirstTurn -> {
             form(classes = "choice-group") {
                 attributes["hx-post"] = "/phase/select"

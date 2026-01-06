@@ -1,6 +1,7 @@
 package org.example.phase
 
 import org.example.game.GameState
+import org.example.game.SecondaryMissionType
 import org.example.guidance.GuidanceContent
 
 /**
@@ -14,6 +15,20 @@ data object CommandPhase : BattlePhaseMarker {
         appendLine("   Both players gain 1 CP (track on your roster)")
         appendLine("   Resolve any other Command phase rules")
         appendLine()
+
+        // Show Tactical secondary mission rules for active player
+        if (state.getSecondaryTypeForPlayer(state.activePlayerNumber) == SecondaryMissionType.TACTICAL) {
+            appendLine("   TACTICAL SECONDARY MISSIONS:")
+            if (state.currentRound == 1) {
+                appendLine("   Draw two cards from your Secondary Mission deck.")
+                appendLine("   Those two cards are active until you achieve them.")
+            } else {
+                appendLine("   If you have fewer than two active Secondary Mission cards,")
+                appendLine("   draw until you have two active Secondary Mission cards.")
+            }
+            appendLine()
+        }
+
         appendLine("2. BATTLE-SHOCK TESTS")
         appendLine("   Test each unit that is Below Half-strength")
         appendLine("   Roll 2D6: pass if >= unit's best Leadership")
@@ -29,6 +44,23 @@ data object CommandPhase : BattlePhaseMarker {
             "COMMAND - Both players gain 1 CP (track on your roster). Resolve any other Command phase rules.",
             "BATTLE-SHOCK TESTS - Test each unit that is Below Half-strength. Roll 2D6: pass if >= unit's best Leadership."
         )))
+
+        // Show Tactical secondary mission rules for active player
+        if (state.getSecondaryTypeForPlayer(state.activePlayerNumber) == SecondaryMissionType.TACTICAL) {
+            val tacticalMessage = if (state.currentRound == 1) {
+                "Draw two cards from your Secondary Mission deck. Those two cards are active until you achieve them."
+            } else {
+                "If you have fewer than two active Secondary Mission cards, draw until you have two active Secondary Mission cards."
+            }
+
+            add(GuidanceContent.InfoBox(
+                title = "Tactical Secondary Missions",
+                content = listOf(
+                    GuidanceContent.Paragraph(tacticalMessage)
+                ),
+                variant = GuidanceContent.BoxVariant.INFO
+            ))
+        }
 
         add(GuidanceContent.InfoBox(
             title = "Battle-shocked Units",
