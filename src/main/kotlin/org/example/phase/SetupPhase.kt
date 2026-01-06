@@ -255,7 +255,7 @@ sealed class SetupPhase : SetupPhaseMarker {
             add(
                 GuidanceContent.NumberedList(
                     listOf(
-                        "Attached Laders - Which Leader units will start attached to which Bodyguard units",
+                        "Attached Leaders - Which Leader units will start attached to which Bodyguard units",
                         "Embarked Units - Which units will start embarked within Transport models",
                         "Reserves - Which units will start in Reserves (including Strategic Reserves)"
                     )
