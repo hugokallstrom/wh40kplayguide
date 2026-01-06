@@ -36,12 +36,12 @@ class GameFlowTest {
         phase = phase.processInput("1", state)!!
         assertIs<SetupPhase.DrawAttackerSecondary>(phase)
 
-        // DrawAttackerSecondary -> DrawDefenderSecondary
-        phase = phase.nextPhase(state)
+        // DrawAttackerSecondary -> DrawDefenderSecondary (requires input: Fixed=1, Tactical=2)
+        phase = phase.processInput("1", state)!!
         assertIs<SetupPhase.DrawDefenderSecondary>(phase)
 
-        // DrawDefenderSecondary -> DeclareBattleFormations
-        phase = phase.nextPhase(state)
+        // DrawDefenderSecondary -> DeclareBattleFormations (requires input: Fixed=1, Tactical=2)
+        phase = phase.processInput("2", state)!!
         assertIs<SetupPhase.DeclareBattleFormations>(phase)
 
         // DeclareBattleFormations -> DeployArmies
