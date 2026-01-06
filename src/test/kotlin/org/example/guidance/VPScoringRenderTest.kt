@@ -13,32 +13,6 @@ import kotlin.test.assertTrue
  */
 class BattlePhaseRenderTest {
 
-    // ========== VP Scoring Phase ==========
-
-    @Test
-    fun `VP Scoring Phase renders mission blocks and info boxes`() {
-        val state = TestFixtures.gameStateInBattle().copy(currentRound = 2)
-        val content = VPScoringPhase.displayStructuredGuidance(state)
-        val html = createHTML().div { HtmlRenderer.render(this, content) }
-
-        assertTrue(html.contains("mission-block"), "Should render mission blocks")
-        assertTrue(html.contains("mission-block-header"), "Should have mission headers")
-        assertTrue(html.contains("ATTACKER"), "Should have attacker secondary info")
-        assertTrue(html.contains("DEFENDER"), "Should have defender secondary info")
-        assertTrue(html.contains("info-box"), "Should render info boxes")
-        assertTrue(html.contains("reminder"), "Should have reminder variant")
-        assertTrue(html.contains("Check VP scoring"), "Should have instruction text")
-    }
-
-    @Test
-    fun `VP Scoring Phase renders warning on round 5`() {
-        val state = TestFixtures.gameStateInBattle().copy(currentRound = 5)
-        val content = VPScoringPhase.displayStructuredGuidance(state)
-        val html = createHTML().div { HtmlRenderer.render(this, content) }
-
-        assertTrue(html.contains("warning"), "Round 5 should have warning info box")
-    }
-
     // ========== Command Phase ==========
 
     @Test
@@ -141,7 +115,7 @@ class BattlePhaseRenderTest {
         val html = createHTML().div { HtmlRenderer.render(this, content) }
 
         assertTrue(html.contains("BATTLE HAS ENDED"), "Should have end game header")
-        assertTrue(html.contains("<ol>"), "Should render numbered list for tallying")
+        assertTrue(html.contains("info-box"), "Should render info box for VP breakdown")
         assertTrue(html.contains("VP"), "Should mention VP")
         assertTrue(html.contains("Victor"), "Should have determine victor section")
         assertTrue(html.contains("wins"), "Should explain who wins")
@@ -161,7 +135,6 @@ class BattlePhaseRenderTest {
         assertTrue(html.contains("Strike Force"), "Should have Strike Force option")
         assertTrue(html.contains("Onslaught"), "Should have Onslaught option")
         assertTrue(html.contains("1000 pts"), "Should show points")
-        assertTrue(html.contains("info-box"), "Should have info box")
     }
 
     @Test
@@ -183,8 +156,8 @@ class BattlePhaseRenderTest {
 
         assertTrue(html.contains("key-value"), "Should render key-value pairs")
         assertTrue(html.contains("Winner"), "Should mention winner")
-        assertTrue(html.contains("ATTACKER"), "Should mention attacker")
-        assertTrue(html.contains("DEFENDER"), "Should mention defender")
+        assertTrue(html.contains("Attacker"), "Should mention attacker")
+        assertTrue(html.contains("Defender"), "Should mention defender")
     }
 
     @Test
@@ -194,9 +167,9 @@ class BattlePhaseRenderTest {
         val html = createHTML().div { HtmlRenderer.render(this, content) }
 
         assertTrue(html.contains("<ol>"), "Should render numbered list")
-        assertTrue(html.contains("ATTACHED LEADERS"), "Should mention leaders")
-        assertTrue(html.contains("EMBARKED"), "Should mention embarked units")
-        assertTrue(html.contains("RESERVES"), "Should mention reserves")
+        assertTrue(html.contains("Leader"), "Should mention leaders")
+        assertTrue(html.contains("Embarked"), "Should mention embarked units")
+        assertTrue(html.contains("Reserves"), "Should mention reserves")
     }
 
     @Test
@@ -206,8 +179,8 @@ class BattlePhaseRenderTest {
         val html = createHTML().div { HtmlRenderer.render(this, content) }
 
         assertTrue(html.contains("<ol>"), "Should render numbered list")
-        assertTrue(html.contains("ATTACKER"), "Should mention attacker")
-        assertTrue(html.contains("DEFENDER"), "Should mention defender")
+        assertTrue(html.contains("Attacker"), "Should mention attacker")
+        assertTrue(html.contains("Defender"), "Should mention defender")
         assertTrue(html.contains("Infiltrators"), "Should mention infiltrators")
     }
 
@@ -228,8 +201,7 @@ class BattlePhaseRenderTest {
         val content = SetupPhase.DetermineFirstTurn.displayStructuredGuidance(state)
         val html = createHTML().div { HtmlRenderer.render(this, content) }
 
-        assertTrue(html.contains("First Turn"), "Should have first turn header")
+        assertTrue(html.contains("first turn"), "Should mention first turn")
         assertTrue(html.contains("roll"), "Should mention roll-off")
-        assertTrue(html.contains("info-box"), "Should have info box")
     }
 }

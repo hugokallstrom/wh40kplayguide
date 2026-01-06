@@ -4,7 +4,6 @@ import org.example.fixtures.TestFixtures
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 /**
@@ -18,14 +17,6 @@ class GameStateTest {
     fun `default state has correct battle size`() {
         val state = TestFixtures.defaultGameState()
         assertEquals(BattleSize.STRIKE_FORCE, state.battleSize)
-    }
-
-    @Test
-    fun `default state has null missions`() {
-        val state = TestFixtures.defaultGameState()
-        assertNull(state.primaryMission)
-        assertNull(state.attackerSecondaryMission)
-        assertNull(state.defenderSecondaryMission)
     }
 
     @Test

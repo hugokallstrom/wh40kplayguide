@@ -29,27 +29,17 @@ class BattlePhaseTest {
     }
 
     @Test
-    fun `CommandPhase transitions to VPScoringPhase in round 2`() {
+    fun `CommandPhase transitions to MovementPhase in round 2`() {
         val state = TestFixtures.gameStateAtRound(2)
         val nextPhase = CommandPhase.nextPhase(state)
 
-        assertEquals(VPScoringPhase, nextPhase)
+        assertEquals(MovementPhase, nextPhase)
     }
 
     @Test
-    fun `CommandPhase transitions to VPScoringPhase in round 5`() {
+    fun `CommandPhase transitions to MovementPhase in round 5`() {
         val state = TestFixtures.gameStateAtRound(5)
         val nextPhase = CommandPhase.nextPhase(state)
-
-        assertEquals(VPScoringPhase, nextPhase)
-    }
-
-    // ========== VPScoringPhase Tests ==========
-
-    @Test
-    fun `VPScoringPhase transitions to MovementPhase`() {
-        val state = TestFixtures.gameStateAtRound(2)
-        val nextPhase = VPScoringPhase.nextPhase(state)
 
         assertEquals(MovementPhase, nextPhase)
     }

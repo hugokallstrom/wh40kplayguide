@@ -2,11 +2,9 @@ package org.example.phase
 
 import org.example.fixtures.TestFixtures
 import org.example.game.BattleSize
-import org.example.game.GameState
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -15,16 +13,6 @@ import kotlin.test.assertTrue
  * Unit tests for SetupPhase transitions and input processing.
  */
 class SetupPhaseTest {
-
-    @BeforeTest
-    fun setUp() {
-        TestFixtures.setupAvailableMissions()
-    }
-
-    @AfterTest
-    fun tearDown() {
-        TestFixtures.clearAvailableMissions()
-    }
 
     // ========== MusterArmies Tests ==========
 
@@ -69,17 +57,25 @@ class SetupPhaseTest {
         assertNull(SetupPhase.MusterArmies.processInput("", state))
     }
 
-    // ========== ReadMissionObjectives Tests ==========
+    @Test
+    fun `MusterArmies advances to DrawPrimaryMission`() {
+        val state = TestFixtures.defaultGameState()
+        val nextPhase = SetupPhase.MusterArmies.processInput("2", state)
+        assertIs<SetupPhase.DrawPrimaryMission>(nextPhase)
+    }
+
+    // ========== DrawPrimaryMission Tests ==========
 
     @Test
-    fun `ReadMissionObjectives selects mission by number`() {
+    fun `DrawPrimaryMission does not require input`() {
+        assertTrue(!SetupPhase.DrawPrimaryMission.requiresInput())
+    }
+
+    @Test
+    fun `DrawPrimaryMission advances to CreateBattlefield`() {
         val state = TestFixtures.defaultGameState()
-
-        val nextPhase = SetupPhase.ReadMissionObjectives.processInput("1", state)
-
-        assertNotNull(state.primaryMission)
-        assertEquals("Take and Hold", state.primaryMission?.name)
-        assertTrue(nextPhase is SetupPhase.DisplayMissionDetails)
+        val nextPhase = SetupPhase.DrawPrimaryMission.nextPhase(state)
+        assertIs<SetupPhase.CreateBattlefield>(nextPhase)
     }
 
     // ========== DetermineAttacker Tests ==========
@@ -102,6 +98,41 @@ class SetupPhaseTest {
         assertEquals(2, state.attackerPlayerNumber)
     }
 
+    @Test
+    fun `DetermineAttacker advances to DrawAttackerSecondary`() {
+        val state = TestFixtures.defaultGameState()
+        val nextPhase = SetupPhase.DetermineAttacker.processInput("1", state)
+        assertIs<SetupPhase.DrawAttackerSecondary>(nextPhase)
+    }
+
+    // ========== DrawAttackerSecondary Tests ==========
+
+    @Test
+    fun `DrawAttackerSecondary does not require input`() {
+        assertTrue(!SetupPhase.DrawAttackerSecondary.requiresInput())
+    }
+
+    @Test
+    fun `DrawAttackerSecondary advances to DrawDefenderSecondary`() {
+        val state = TestFixtures.defaultGameState()
+        val nextPhase = SetupPhase.DrawAttackerSecondary.nextPhase(state)
+        assertIs<SetupPhase.DrawDefenderSecondary>(nextPhase)
+    }
+
+    // ========== DrawDefenderSecondary Tests ==========
+
+    @Test
+    fun `DrawDefenderSecondary does not require input`() {
+        assertTrue(!SetupPhase.DrawDefenderSecondary.requiresInput())
+    }
+
+    @Test
+    fun `DrawDefenderSecondary advances to DeclareBattleFormations`() {
+        val state = TestFixtures.defaultGameState()
+        val nextPhase = SetupPhase.DrawDefenderSecondary.nextPhase(state)
+        assertIs<SetupPhase.DeclareBattleFormations>(nextPhase)
+    }
+
     // ========== DetermineFirstTurn Tests ==========
 
     @Test
@@ -115,7 +146,7 @@ class SetupPhaseTest {
     }
 
     @Test
-    fun `PreBattleRules calls startBattle via DetermineFirstTurn`() {
+    fun `DetermineFirstTurn calls startBattle`() {
         val state = TestFixtures.defaultGameState()
         assertEquals(0, state.currentRound) // Pre-battle
 

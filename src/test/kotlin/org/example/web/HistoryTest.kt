@@ -7,7 +7,6 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.sessions.*
 import io.ktor.server.testing.*
-import org.example.fixtures.TestFixtures
 import org.example.game.BattleSize
 import org.example.phase.SetupPhase
 import kotlin.test.*
@@ -16,16 +15,6 @@ import kotlin.test.*
  * Tests for browser history functionality (back button support).
  */
 class HistoryTest {
-
-    @BeforeTest
-    fun setup() {
-        TestFixtures.setupAvailableMissions()
-    }
-
-    @AfterTest
-    fun teardown() {
-        TestFixtures.clearAvailableMissions()
-    }
 
     // ========== SessionGameData Tests ==========
 
@@ -40,14 +29,14 @@ class HistoryTest {
     fun `saveSnapshot stores current state and phase`() {
         val gameData = SessionGameData()
         gameData.state.battleSize = BattleSize.INCURSION
-        gameData.currentPhase = SetupPhase.ReadMissionObjectives
+        gameData.currentPhase = SetupPhase.DrawPrimaryMission
 
         gameData.saveSnapshot()
 
         val snapshot = gameData.snapshots[0]
         assertNotNull(snapshot)
         assertEquals(BattleSize.INCURSION, snapshot.first.battleSize)
-        assertEquals(SetupPhase.ReadMissionObjectives, snapshot.second)
+        assertEquals(SetupPhase.DrawPrimaryMission, snapshot.second)
     }
 
     @Test
@@ -72,7 +61,7 @@ class HistoryTest {
 
         // Save initial state
         gameData.state.battleSize = BattleSize.INCURSION
-        gameData.currentPhase = SetupPhase.ReadMissionObjectives
+        gameData.currentPhase = SetupPhase.DrawPrimaryMission
         gameData.saveSnapshot()
 
         // Advance
@@ -87,7 +76,7 @@ class HistoryTest {
         assertTrue(restored)
         assertEquals(0, gameData.version)
         assertEquals(BattleSize.INCURSION, gameData.state.battleSize)
-        assertEquals(SetupPhase.ReadMissionObjectives, gameData.currentPhase)
+        assertEquals(SetupPhase.DrawPrimaryMission, gameData.currentPhase)
     }
 
     @Test
@@ -117,9 +106,9 @@ class HistoryTest {
         }
 
         // Check redirect includes version
-        val selectResponse = testClient.post("/phase/select") {
+        val selectResponse = testClient.post("/phase/advance") {
             header("Content-Type", "application/x-www-form-urlencoded")
-            setBody("choice=1")
+            setBody("version=1")
         }
 
         assertEquals(HttpStatusCode.Found, selectResponse.status)
@@ -147,10 +136,10 @@ class HistoryTest {
         val firstLocation = firstResponse.headers["Location"]
         assertNotNull(firstLocation)
 
-        // Continue to select mission
-        testClient.post("/phase/select") {
+        // Continue to advance
+        testClient.post("/phase/advance") {
             header("Content-Type", "application/x-www-form-urlencoded")
-            setBody("choice=1")
+            setBody("version=1")
         }
 
         // Now go back to first version by loading old URL
@@ -160,8 +149,8 @@ class HistoryTest {
         // Verify we're back at the expected phase
         val body = backResponse.bodyAsText()
         assertTrue(
-            body.contains("Primary Mission") || body.contains("MISSION") || body.contains("READ"),
-            "Should be at ReadMissionObjectives phase after going back"
+            body.contains("Primary Mission") || body.contains("Draw"),
+            "Should be at DrawPrimaryMission phase after going back"
         )
     }
 
@@ -189,7 +178,7 @@ class HistoryTest {
         // Verify back at start
         val phaseResponse = testClient.get("/phase")
         val body = phaseResponse.bodyAsText()
-        assertTrue(body.contains("MUSTER ARMIES"))
+        assertTrue(body.contains("Muster Armies"))
     }
 
     @Test
@@ -208,12 +197,12 @@ class HistoryTest {
             header("Content-Type", "application/x-www-form-urlencoded")
             setBody("choice=1&version=0")
         }
-        testClient.post("/phase/select") {
+        testClient.post("/phase/advance") {
             header("Content-Type", "application/x-www-form-urlencoded")
-            setBody("choice=1&version=1")
+            setBody("version=1")
         }
 
-        // HTMX request to advance (version=2 from previous selections)
+        // HTMX request to advance (version=2 from previous actions)
         val response = testClient.post("/phase/advance") {
             header("HX-Request", "true")
             header("Content-Type", "application/x-www-form-urlencoded")
@@ -231,8 +220,6 @@ class HistoryTest {
  * Configures a test server with mock data.
  */
 private fun Application.configureHistoryTestServer() {
-    TestFixtures.setupAvailableMissions()
-
     install(Sessions) {
         cookie<GameSession>("GAME_SESSION") {
             cookie.path = "/"
@@ -246,4 +233,4 @@ private fun Application.configureHistoryTestServer() {
 /**
  * A simplified WebServer for testing that doesn't load files.
  */
-private class HistoryTestWebServer : WebServer("", "")
+private class HistoryTestWebServer : WebServer()

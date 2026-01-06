@@ -1,6 +1,5 @@
 package org.example.web
 
-import io.ktor.client.*
 import io.ktor.client.plugins.cookies.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -8,25 +7,12 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.sessions.*
 import io.ktor.server.testing.*
-import org.example.fixtures.TestFixtures
-import org.example.mission.Mission
-import org.example.phase.SetupPhase
 import kotlin.test.*
 
 /**
  * Tests for the web server routes.
  */
 class WebServerTest {
-
-    @BeforeTest
-    fun setup() {
-        TestFixtures.setupAvailableMissions()
-    }
-
-    @AfterTest
-    fun teardown() {
-        TestFixtures.clearAvailableMissions()
-    }
 
     @Test
     fun `home page returns 200 and contains title`() = testApplication {
@@ -66,7 +52,7 @@ class WebServerTest {
         val response = client.get("/phase")
         assertEquals(HttpStatusCode.OK, response.status)
         val body = response.bodyAsText()
-        assertTrue(body.contains("MUSTER ARMIES"))
+        assertTrue(body.contains("Muster Armies"))
     }
 
     @Test
@@ -75,22 +61,16 @@ class WebServerTest {
             configureTestServer()
         }
 
-        // First select battle size to get to ReadMissionObjectives
+        // First select battle size to get to DrawPrimaryMission
         client.post("/phase/select") {
             header("Content-Type", "application/x-www-form-urlencoded")
             setBody("choice=2&version=0") // Strike Force
         }
 
-        // Select a primary mission to get to DisplayMissionDetails (non-input)
-        client.post("/phase/select") {
-            header("Content-Type", "application/x-www-form-urlencoded")
-            setBody("choice=1&version=1")
-        }
-
-        // Now advance should work (version=2 from previous selections)
+        // Now advance should work (version=1 from previous selection)
         val response = client.post("/phase/advance") {
             header("Content-Type", "application/x-www-form-urlencoded")
-            setBody("version=2")
+            setBody("version=1")
         }
         assertEquals(HttpStatusCode.Found, response.status)
     }
@@ -118,7 +98,7 @@ class WebServerTest {
         // Verify we moved to next phase (with same client to preserve session)
         val phaseResponse = testClient.get("/phase")
         val body = phaseResponse.bodyAsText()
-        assertTrue(body.contains("Primary Mission") || body.contains("MISSION") || body.contains("READ"))
+        assertTrue(body.contains("Primary Mission") || body.contains("Draw"))
     }
 
     @Test
@@ -171,7 +151,7 @@ class WebServerTest {
         // Verify we're back at start
         val phaseResponse = client.get("/phase")
         val body = phaseResponse.bodyAsText()
-        assertTrue(body.contains("MUSTER ARMIES"))
+        assertTrue(body.contains("Muster Armies"))
     }
 
     @Test
@@ -203,9 +183,6 @@ class WebServerTest {
  * Configures a test server with mock data.
  */
 private fun Application.configureTestServer() {
-    // Set up test missions
-    TestFixtures.setupAvailableMissions()
-
     install(Sessions) {
         cookie<GameSession>("GAME_SESSION") {
             cookie.path = "/"
@@ -220,8 +197,4 @@ private fun Application.configureTestServer() {
 /**
  * A simplified WebServer for testing that doesn't load files.
  */
-private class TestWebServer : WebServer("", "") {
-    init {
-        // Missions are already set up via TestFixtures
-    }
-}
+private class TestWebServer : WebServer()

@@ -2,7 +2,6 @@ package org.example.phase
 
 import org.example.game.GameState
 import org.example.guidance.GuidanceContent
-import org.example.mission.Mission
 
 /**
  * Command Phase - Both players gain CP, Battle-shock tests
@@ -43,150 +42,6 @@ data object CommandPhase : BattlePhaseMarker {
             ),
             variant = GuidanceContent.BoxVariant.WARNING
         ))
-    }
-
-    override fun nextPhase(state: GameState): Phase {
-        // VP scoring only from round 2 onwards
-        return if (state.currentRound >= 2) VPScoringPhase else MovementPhase
-    }
-}
-
-/**
- * VP Scoring Phase - Check mission objectives (from round 2)
- */
-data object VPScoringPhase : BattlePhaseMarker {
-    override val phaseName = "VP SCORING"
-
-    override fun displayGuidance(state: GameState): String = buildString {
-        appendLine("Check VP scoring for your selected missions!")
-        appendLine()
-
-        // Primary Mission
-        state.primaryMission?.let { mission ->
-            appendLine("═══ PRIMARY: ${mission.name.uppercase()} ═══")
-            appendLine()
-            val vpLines = mission.fullText.lines()
-                .filter { line ->
-                    line.contains("VP", ignoreCase = false) ||
-                    line.contains("score", ignoreCase = true) ||
-                    line.contains("control", ignoreCase = true) ||
-                    line.contains("objective", ignoreCase = true)
-                }
-                .take(10)
-            vpLines.forEach { appendLine("  $it") }
-            appendLine()
-        } ?: appendLine("No primary mission selected!")
-
-        // Attacker Secondary Mission
-        state.attackerSecondaryMission?.let { mission ->
-            appendLine("═══ ATTACKER SECONDARY: ${mission.name.uppercase()} ═══")
-            appendLine("(Player ${state.attackerPlayerNumber})")
-            appendLine()
-            val vpLines = mission.fullText.lines()
-                .filter { line ->
-                    line.contains("VP", ignoreCase = false) ||
-                    line.contains("score", ignoreCase = true)
-                }
-                .take(6)
-            vpLines.forEach { appendLine("  $it") }
-            appendLine()
-        }
-
-        // Defender Secondary Mission
-        state.defenderSecondaryMission?.let { mission ->
-            appendLine("═══ DEFENDER SECONDARY: ${mission.name.uppercase()} ═══")
-            appendLine("(Player ${state.defenderPlayerNumber})")
-            appendLine()
-            val vpLines = mission.fullText.lines()
-                .filter { line ->
-                    line.contains("VP", ignoreCase = false) ||
-                    line.contains("score", ignoreCase = true)
-                }
-                .take(6)
-            vpLines.forEach { appendLine("  $it") }
-            appendLine()
-        }
-
-        appendLine("Reminder:")
-        appendLine("  Control = your total OC within 3\" exceeds opponent's total OC")
-        appendLine("  OC is 0 for Battle-shocked units")
-
-        // Special note for round 5
-        if (state.currentRound == 5) {
-            appendLine()
-            appendLine("ROUND 5 NOTE: If going second, score VP at end of your turn instead!")
-        }
-    }
-
-    override fun displayStructuredGuidance(state: GameState): List<GuidanceContent> = buildList {
-        add(GuidanceContent.Paragraph("Check VP scoring for your selected missions!"))
-
-        // Primary Mission
-        state.primaryMission?.let { mission ->
-            add(createMissionBlock(mission, null))
-        } ?: add(GuidanceContent.Paragraph("No primary mission selected!"))
-
-        // Attacker Secondary Mission
-        state.attackerSecondaryMission?.let { mission ->
-            add(createMissionBlock(
-                mission,
-                "Player ${state.attackerPlayerNumber} (ATTACKER)"
-            ))
-        }
-
-        // Defender Secondary Mission
-        state.defenderSecondaryMission?.let { mission ->
-            add(createMissionBlock(
-                mission,
-                "Player ${state.defenderPlayerNumber} (DEFENDER)"
-            ))
-        }
-
-        // Reminder
-        add(GuidanceContent.InfoBox(
-            title = "Reminder",
-            content = listOf(
-                GuidanceContent.KeyValue(listOf(
-                    "Control" to "your total OC within 3\" exceeds opponent's total OC",
-                    "Battle-shocked" to "OC becomes 0"
-                ))
-            ),
-            variant = GuidanceContent.BoxVariant.REMINDER
-        ))
-
-        // Special note for round 5
-        if (state.currentRound == 5) {
-            add(GuidanceContent.InfoBox(
-                title = "Round 5 Note",
-                content = listOf(
-                    GuidanceContent.Paragraph("If going second, score VP at end of your turn instead!")
-                ),
-                variant = GuidanceContent.BoxVariant.WARNING
-            ))
-        }
-    }
-
-    private fun createMissionBlock(mission: Mission, player: String?): GuidanceContent.MissionBlock {
-        val vpLines = mission.fullText.lines()
-            .filter { line ->
-                line.contains("VP", ignoreCase = false) ||
-                line.contains("score", ignoreCase = true) ||
-                line.contains("control", ignoreCase = true) ||
-                line.contains("objective", ignoreCase = true)
-            }
-            .take(10)
-
-        val scoringRules = if (vpLines.isNotEmpty()) {
-            listOf(GuidanceContent.BulletList(vpLines))
-        } else {
-            listOf(GuidanceContent.Paragraph(mission.fullText.take(200)))
-        }
-
-        return GuidanceContent.MissionBlock(
-            missionName = mission.name,
-            player = player,
-            scoringRules = scoringRules
-        )
     }
 
     override fun nextPhase(state: GameState): Phase = MovementPhase
@@ -301,19 +156,10 @@ data object ShootingPhase : BattlePhaseMarker {
         appendLine("  Monsters/Vehicles in Engagement Range CAN shoot")
         appendLine("  -1 to Hit with ranged attacks (except PISTOL)")
         appendLine("  Can only target units they're in Engagement Range of (or PISTOL)")
-
-        // Check for mission actions
-        state.primaryMission?.let { mission ->
-            if (mission.hasAction) {
-                appendLine()
-                appendLine("MISSION ACTIONS (start in Shooting phase):")
-                val actionLines = mission.fullText.lines()
-                    .dropWhile { !it.contains("ACTION", ignoreCase = true) }
-                    .takeWhile { !it.contains("SECOND BATTLE ROUND", ignoreCase = true) && !it.contains("ANY BATTLE ROUND", ignoreCase = true) }
-                    .take(8)
-                actionLines.forEach { appendLine("  $it") }
-            }
-        }
+        appendLine()
+        appendLine("MISSION ACTIONS:")
+        appendLine("  Check your mission cards for any actions that can be performed")
+        appendLine("  during the Shooting phase.")
     }
 
     override fun displayStructuredGuidance(state: GameState): List<GuidanceContent> = buildList {
@@ -353,26 +199,13 @@ data object ShootingPhase : BattlePhaseMarker {
             variant = GuidanceContent.BoxVariant.REMINDER
         ))
 
-        // Check for mission actions
-        state.primaryMission?.let { mission ->
-            if (mission.hasAction) {
-                val actionLines = mission.fullText.lines()
-                    .dropWhile { !it.contains("ACTION", ignoreCase = true) }
-                    .takeWhile { !it.contains("SECOND BATTLE ROUND", ignoreCase = true) && !it.contains("ANY BATTLE ROUND", ignoreCase = true) }
-                    .take(8)
-
-                if (actionLines.isNotEmpty()) {
-                    add(GuidanceContent.InfoBox(
-                        title = "Mission Actions",
-                        content = listOf(
-                            GuidanceContent.Paragraph("Actions can be started in the Shooting phase:"),
-                            GuidanceContent.BulletList(actionLines)
-                        ),
-                        variant = GuidanceContent.BoxVariant.INFO
-                    ))
-                }
-            }
-        }
+        add(GuidanceContent.InfoBox(
+            title = "Mission Actions",
+            content = listOf(
+                GuidanceContent.Paragraph("Check your mission cards for any actions that can be performed during the Shooting phase.")
+            ),
+            variant = GuidanceContent.BoxVariant.INFO
+        ))
     }
 
     override fun nextPhase(state: GameState): Phase = ChargePhase
@@ -505,20 +338,18 @@ data object EndOfTurnPhase : BattlePhaseMarker {
         appendLine("Player ${state.activePlayerNumber}'s turn is ending.")
         appendLine()
 
-        // Check for end-of-turn VP scoring
-        state.primaryMission?.let { mission ->
-            val hasEndOfTurnScoring = mission.fullText.contains("End of your turn", ignoreCase = true) ||
-                    mission.fullText.contains("End of the turn", ignoreCase = true) ||
-                    mission.fullText.contains("End of either player's turn", ignoreCase = true)
-
-            if (hasEndOfTurnScoring) {
-                appendLine("CHECK END-OF-TURN VP SCORING:")
-                val turnLines = mission.fullText.lines()
-                    .filter { it.contains("end of", ignoreCase = true) && it.contains("turn", ignoreCase = true) }
-                    .take(5)
-                turnLines.forEach { appendLine("  $it") }
-                appendLine()
-            }
+        // VP scoring from round 2 onwards
+        if (state.currentRound >= 2) {
+            appendLine("VP SCORING:")
+            appendLine("  Score VP from your Primary and Secondary missions.")
+            appendLine("  Refer to your mission cards for scoring conditions.")
+            appendLine()
+            appendLine("VP Breakdown (max 100VP):")
+            appendLine("  Primary Mission: up to 50VP")
+            appendLine("  Secondary Missions: up to 40VP")
+            appendLine("  Battle Ready bonus: 10VP")
+            appendLine("  Challenger cards: up to 12VP (optional)")
+            appendLine()
         }
 
         appendLine("Complete any end-of-turn effects and proceed to next turn.")
@@ -527,25 +358,29 @@ data object EndOfTurnPhase : BattlePhaseMarker {
     override fun displayStructuredGuidance(state: GameState): List<GuidanceContent> = buildList {
         add(GuidanceContent.Header("Player ${state.activePlayerNumber}'s turn is ending", 1))
 
-        // Check for end-of-turn VP scoring
-        state.primaryMission?.let { mission ->
-            val hasEndOfTurnScoring = mission.fullText.contains("End of your turn", ignoreCase = true) ||
-                    mission.fullText.contains("End of the turn", ignoreCase = true) ||
-                    mission.fullText.contains("End of either player's turn", ignoreCase = true)
+        // VP scoring from round 2 onwards
+        if (state.currentRound >= 2) {
+            add(GuidanceContent.InfoBox(
+                title = "VP Scoring",
+                content = listOf(
+                    GuidanceContent.Paragraph("Score VP from your **Primary** and **Secondary** missions."),
+                    GuidanceContent.Paragraph("Refer to your mission cards for scoring conditions.")
+                ),
+                variant = GuidanceContent.BoxVariant.WARNING
+            ))
 
-            if (hasEndOfTurnScoring) {
-                val turnLines = mission.fullText.lines()
-                    .filter { it.contains("end of", ignoreCase = true) && it.contains("turn", ignoreCase = true) }
-                    .take(5)
-
-                add(GuidanceContent.InfoBox(
-                    title = "Check End-of-Turn VP Scoring",
-                    content = listOf(
-                        GuidanceContent.BulletList(turnLines)
-                    ),
-                    variant = GuidanceContent.BoxVariant.WARNING
-                ))
-            }
+            add(GuidanceContent.InfoBox(
+                title = "VP Breakdown (max 100VP)",
+                content = listOf(
+                    GuidanceContent.KeyValue(listOf(
+                        "Primary Mission" to "up to 50VP",
+                        "Secondary Missions" to "up to 40VP",
+                        "Battle Ready bonus" to "10VP",
+                        "Challenger cards" to "up to 12VP (optional)"
+                    ))
+                ),
+                variant = GuidanceContent.BoxVariant.REMINDER
+            ))
         }
 
         add(GuidanceContent.Paragraph("Complete any end-of-turn effects and proceed to next turn."))
@@ -575,20 +410,9 @@ data class EndOfRoundPhase(val completedRound: Int) : BattlePhaseMarker {
     override fun displayGuidance(state: GameState): String = buildString {
         appendLine("Battle Round $completedRound complete!")
         appendLine()
-
-        // Check for end-of-round VP scoring (e.g., Purge the Foe)
-        state.primaryMission?.let { mission ->
-            val hasEndOfRoundScoring = mission.fullText.contains("End of the battle round", ignoreCase = true)
-
-            if (hasEndOfRoundScoring) {
-                appendLine("CHECK END-OF-ROUND VP SCORING:")
-                val roundLines = mission.fullText.lines()
-                    .filter { it.contains("battle round", ignoreCase = true) }
-                    .take(5)
-                roundLines.forEach { appendLine("  $it") }
-                appendLine()
-            }
-        }
+        appendLine("CHECK END-OF-ROUND VP SCORING:")
+        appendLine("  Review your mission cards for any end-of-round scoring conditions.")
+        appendLine()
 
         if (completedRound < 5) {
             appendLine("Proceeding to Battle Round ${completedRound + 1}...")
@@ -598,24 +422,13 @@ data class EndOfRoundPhase(val completedRound: Int) : BattlePhaseMarker {
     override fun displayStructuredGuidance(state: GameState): List<GuidanceContent> = buildList {
         add(GuidanceContent.Header("Battle Round $completedRound Complete!", 1))
 
-        // Check for end-of-round VP scoring (e.g., Purge the Foe)
-        state.primaryMission?.let { mission ->
-            val hasEndOfRoundScoring = mission.fullText.contains("End of the battle round", ignoreCase = true)
-
-            if (hasEndOfRoundScoring) {
-                val roundLines = mission.fullText.lines()
-                    .filter { it.contains("battle round", ignoreCase = true) }
-                    .take(5)
-
-                add(GuidanceContent.InfoBox(
-                    title = "Check End-of-Round VP Scoring",
-                    content = listOf(
-                        GuidanceContent.BulletList(roundLines)
-                    ),
-                    variant = GuidanceContent.BoxVariant.WARNING
-                ))
-            }
-        }
+        add(GuidanceContent.InfoBox(
+            title = "Check End-of-Round VP Scoring",
+            content = listOf(
+                GuidanceContent.Paragraph("Review your mission cards for any end-of-round scoring conditions.")
+            ),
+            variant = GuidanceContent.BoxVariant.WARNING
+        ))
 
         if (completedRound < 5) {
             add(GuidanceContent.InfoBox(
@@ -642,16 +455,12 @@ data object EndGamePhase : BattlePhaseMarker {
     override fun displayGuidance(state: GameState): String = buildString {
         appendLine("THE BATTLE HAS ENDED!")
         appendLine()
-        appendLine("Final VP Tallying:")
-        appendLine("  1. Count all VP scored during the game")
-        appendLine("  2. Check for any end-of-game bonuses")
+        appendLine("Final VP Tallying (max 100VP):")
+        appendLine("  Primary Mission: up to 50VP")
+        appendLine("  Secondary Missions: up to 40VP")
+        appendLine("  Battle Ready bonus: 10VP (fully painted army)")
+        appendLine("  Challenger cards: up to 12VP (optional)")
         appendLine()
-
-        state.primaryMission?.let { mission ->
-            appendLine("Mission: ${mission.name}")
-            appendLine()
-        }
-
         appendLine("DETERMINE VICTOR:")
         appendLine("  If one army was destroyed: Their opponent wins")
         appendLine("  Otherwise: Player with most VP wins")
@@ -664,20 +473,18 @@ data object EndGamePhase : BattlePhaseMarker {
         add(GuidanceContent.Header("THE BATTLE HAS ENDED!", 1))
 
         add(GuidanceContent.Header("Final VP Tallying", 2))
-        add(GuidanceContent.NumberedList(listOf(
-            "Count all VP scored during the game",
-            "Check for any end-of-game bonuses"
-        )))
-
-        state.primaryMission?.let { mission ->
-            add(GuidanceContent.InfoBox(
-                title = "Mission: ${mission.name}",
-                content = listOf(
-                    GuidanceContent.Paragraph("Review mission-specific scoring conditions")
-                ),
-                variant = GuidanceContent.BoxVariant.INFO
-            ))
-        }
+        add(GuidanceContent.InfoBox(
+            title = "VP Breakdown (max 100VP)",
+            content = listOf(
+                GuidanceContent.KeyValue(listOf(
+                    "Primary Mission" to "up to 50VP",
+                    "Secondary Missions" to "up to 40VP",
+                    "Battle Ready bonus" to "10VP (fully painted army)",
+                    "Challenger cards" to "up to 12VP (optional)"
+                ))
+            ),
+            variant = GuidanceContent.BoxVariant.INFO
+        ))
 
         add(GuidanceContent.Header("Determine Victor", 2))
         add(GuidanceContent.BulletList(listOf(
