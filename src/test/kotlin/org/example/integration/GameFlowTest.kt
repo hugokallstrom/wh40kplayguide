@@ -3,28 +3,15 @@ package org.example.integration
 import org.example.fixtures.TestFixtures
 import org.example.game.GameState
 import org.example.phase.*
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
-import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 /**
  * Integration tests for complete game flows.
  */
 class GameFlowTest {
-
-    @BeforeTest
-    fun setUp() {
-        TestFixtures.setupAvailableMissions()
-    }
-
-    @AfterTest
-    fun tearDown() {
-        TestFixtures.clearAvailableMissions()
-    }
 
     // ========== Setup Flow Tests ==========
 
@@ -33,15 +20,11 @@ class GameFlowTest {
         val state = TestFixtures.defaultGameState()
         var phase: Phase = SetupPhase.MusterArmies
 
-        // MusterArmies -> ReadMissionObjectives
+        // MusterArmies -> DrawPrimaryMission
         phase = phase.processInput("2", state)!! // Strike Force
-        assertIs<SetupPhase.ReadMissionObjectives>(phase)
+        assertIs<SetupPhase.DrawPrimaryMission>(phase)
 
-        // ReadMissionObjectives -> DisplayMissionDetails
-        phase = phase.processInput("1", state)!!
-        assertIs<SetupPhase.DisplayMissionDetails>(phase)
-
-        // DisplayMissionDetails -> CreateBattlefield
+        // DrawPrimaryMission -> CreateBattlefield
         phase = phase.nextPhase(state)
         assertIs<SetupPhase.CreateBattlefield>(phase)
 
@@ -49,23 +32,15 @@ class GameFlowTest {
         phase = phase.nextPhase(state)
         assertIs<SetupPhase.DetermineAttacker>(phase)
 
-        // DetermineAttacker -> SelectAttackerSecondary
+        // DetermineAttacker -> DrawAttackerSecondary
         phase = phase.processInput("1", state)!!
-        assertIs<SetupPhase.SelectAttackerSecondary>(phase)
+        assertIs<SetupPhase.DrawAttackerSecondary>(phase)
 
-        // SelectAttackerSecondary -> DisplayAttackerSecondary
-        phase = phase.processInput("1", state)!!
-        assertIs<SetupPhase.DisplayAttackerSecondary>(phase)
-
-        // DisplayAttackerSecondary -> SelectDefenderSecondary
+        // DrawAttackerSecondary -> DrawDefenderSecondary
         phase = phase.nextPhase(state)
-        assertIs<SetupPhase.SelectDefenderSecondary>(phase)
+        assertIs<SetupPhase.DrawDefenderSecondary>(phase)
 
-        // SelectDefenderSecondary -> DisplayDefenderSecondary
-        phase = phase.processInput("1", state)!!
-        assertIs<SetupPhase.DisplayDefenderSecondary>(phase)
-
-        // DisplayDefenderSecondary -> DeclareBattleFormations
+        // DrawDefenderSecondary -> DeclareBattleFormations
         phase = phase.nextPhase(state)
         assertIs<SetupPhase.DeclareBattleFormations>(phase)
 
@@ -123,8 +98,7 @@ class GameFlowTest {
         val state = GameState(
             currentRound = 1,
             activePlayerNumber = 1,
-            firstPlayerNumber = 1,
-            primaryMission = TestFixtures.samplePrimaryMission()
+            firstPlayerNumber = 1
         )
 
         // Player 1's turn ends
@@ -165,34 +139,12 @@ class GameFlowTest {
     }
 
     @Test
-    fun `missions persist through all phases`() {
-        val state = TestFixtures.gameStateInBattle()
-        val primaryMission = state.primaryMission
-        val attackerSecondary = state.attackerSecondaryMission
-        val defenderSecondary = state.defenderSecondaryMission
-
-        // Go through several phases
-        var phase: Phase = CommandPhase
-        phase = phase.nextPhase(state) // MovementPhase
-        phase = phase.nextPhase(state) // ShootingPhase
-        phase = phase.nextPhase(state) // ChargePhase
-        phase = phase.nextPhase(state) // FightPhase
-        phase = phase.nextPhase(state) // EndOfTurnPhase
-
-        // Missions should still be set
-        assertEquals(primaryMission, state.primaryMission)
-        assertEquals(attackerSecondary, state.attackerSecondaryMission)
-        assertEquals(defenderSecondary, state.defenderSecondaryMission)
-    }
-
-    @Test
     fun `game state consistent after multiple rounds`() {
         val state = GameState(
             currentRound = 1,
             activePlayerNumber = 1,
             firstPlayerNumber = 1,
-            attackerPlayerNumber = 1,
-            primaryMission = TestFixtures.samplePrimaryMission()
+            attackerPlayerNumber = 1
         )
 
         // Simulate 3 complete rounds
@@ -211,6 +163,5 @@ class GameFlowTest {
         assertEquals(1, state.activePlayerNumber) // Back to first player
         assertEquals(1, state.firstPlayerNumber) // Unchanged
         assertEquals(1, state.attackerPlayerNumber) // Unchanged
-        assertNotNull(state.primaryMission) // Still set
     }
 }

@@ -154,6 +154,25 @@ fun HTML.renderLayout(title: String, content: MAIN.() -> Unit) {
                         margin: 0.25rem 0;
                     }
 
+                    /* Formatted Text (with markdown support) */
+                    .formatted-text {
+                        line-height: 1.6;
+                    }
+
+                    .formatted-text p {
+                        margin: 0.5rem 0;
+                    }
+
+                    .formatted-text strong {
+                        font-weight: 600;
+                        color: var(--pico-primary);
+                    }
+
+                    .formatted-text em {
+                        font-style: italic;
+                        color: var(--pico-muted-color);
+                    }
+
                     /* Info Boxes */
                     .info-box {
                         padding: 1rem;

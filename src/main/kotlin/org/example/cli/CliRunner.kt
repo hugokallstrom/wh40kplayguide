@@ -1,28 +1,20 @@
 package org.example.cli
 
 import org.example.game.GameState
-import org.example.mission.Mission
-import org.example.mission.MissionLoader
 import org.example.phase.*
 
 /**
  * Runs the CLI game guide.
  */
-class CliRunner(
-    private val primaryMissionsPath: String,
-    private val secondaryMissionsPath: String
-) {
+class CliRunner {
     private val state = GameState()
     private var currentPhase: Phase = SetupPhase.MusterArmies
-    private var primaryMissions: List<Mission> = emptyList()
-    private var secondaryMissions: List<Mission> = emptyList()
     private var running = true
 
     /**
      * Starts the game guide.
      */
     fun run() {
-        loadMissions()
         printHeader()
 
         while (running && currentPhase !is EndGamePhase) {
@@ -36,29 +28,6 @@ class CliRunner(
         // Show end game
         if (currentPhase is EndGamePhase) {
             displayPhase()
-        }
-    }
-
-    private fun loadMissions() {
-        try {
-            primaryMissions = MissionLoader.loadPrimaryMissions(primaryMissionsPath)
-            SetupPhase.ReadMissionObjectives.availableMissions = primaryMissions
-            println("Loaded ${primaryMissions.size} primary missions.")
-        } catch (e: Exception) {
-            println("Warning: Could not load primary missions from $primaryMissionsPath")
-            println("Error: ${e.message}")
-            println()
-        }
-
-        try {
-            secondaryMissions = MissionLoader.loadSecondaryMissions(secondaryMissionsPath)
-            SetupPhase.SelectAttackerSecondary.availableMissions = secondaryMissions
-            SetupPhase.SelectDefenderSecondary.availableMissions = secondaryMissions
-            println("Loaded ${secondaryMissions.size} secondary missions.")
-        } catch (e: Exception) {
-            println("Warning: Could not load secondary missions from $secondaryMissionsPath")
-            println("Error: ${e.message}")
-            println()
         }
     }
 
@@ -163,17 +132,6 @@ class CliRunner(
         println()
         println("Battle Size: ${state.battleSize.name.replace("_", " ")} (${state.battleSize.points} pts)")
         println("Battlefield: ${state.battleSize.battlefieldSize}")
-        println()
-        state.primaryMission?.let {
-            println("Primary Mission: ${it.name}")
-        } ?: println("Primary Mission: Not selected")
-
-        state.attackerSecondaryMission?.let {
-            println("Attacker Secondary: ${it.name}")
-        }
-        state.defenderSecondaryMission?.let {
-            println("Defender Secondary: ${it.name}")
-        }
         println()
         if (state.currentRound > 0) {
             println("Current Round: ${state.currentRound}")

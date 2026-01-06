@@ -15,6 +15,9 @@ A Kotlin-based Warhammer bot project using Gradle as the build system.
 # Run the application
 ./gradlew run
 
+#Run the web application
+./gradlew run --args="--web"
+
 # Run all tests
 ./gradlew test
 

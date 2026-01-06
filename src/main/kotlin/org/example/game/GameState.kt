@@ -1,7 +1,5 @@
 package org.example.game
 
-import org.example.mission.Mission
-
 /**
  * Battle size options with their point limits and battlefield dimensions.
  */
@@ -17,9 +15,6 @@ enum class BattleSize(val points: Int, val battlefieldSize: String, val duration
  */
 data class GameState(
     var battleSize: BattleSize = BattleSize.STRIKE_FORCE,
-    var primaryMission: Mission? = null,
-    var attackerSecondaryMission: Mission? = null,
-    var defenderSecondaryMission: Mission? = null,
     var currentRound: Int = 0,
     var activePlayerNumber: Int = 1,  // 1 or 2
     var firstPlayerNumber: Int = 1,   // Who goes first each round (set after roll-off)

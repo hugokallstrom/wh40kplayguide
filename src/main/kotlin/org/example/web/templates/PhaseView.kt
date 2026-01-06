@@ -137,20 +137,6 @@ private fun FlowContent.renderInputPhase(phase: Phase, state: org.example.game.G
             }
         }
 
-        is SetupPhase.ReadMissionObjectives -> {
-            renderMissionSelector(SetupPhase.ReadMissionObjectives.availableMissions, version)
-        }
-
-        is SetupPhase.SelectAttackerSecondary -> {
-            p { +"Player ${state.attackerPlayerNumber} (ATTACKER) - Select Secondary Mission:" }
-            renderMissionSelector(SetupPhase.SelectAttackerSecondary.availableMissions, version)
-        }
-
-        is SetupPhase.SelectDefenderSecondary -> {
-            p { +"Player ${state.defenderPlayerNumber} (DEFENDER) - Select Secondary Mission:" }
-            renderMissionSelector(SetupPhase.SelectDefenderSecondary.availableMissions, version)
-        }
-
         is SetupPhase.DetermineAttacker -> {
             form(classes = "choice-group") {
                 attributes["hx-post"] = "/phase/select"
@@ -208,39 +194,6 @@ private fun FlowContent.renderInputPhase(phase: Phase, state: org.example.game.G
         else -> {
             // Generic fallback for any other input phase
             renderContinueButton(version)
-        }
-    }
-}
-
-/**
- * Renders a mission selector.
- * @param version The current game version for browser history support
- */
-private fun FlowContent.renderMissionSelector(missions: List<org.example.mission.Mission>, version: Int) {
-    form(classes = "choice-group") {
-        attributes["hx-post"] = "/phase/select"
-        attributes["hx-target"] = "#phase-content"
-        attributes["hx-swap"] = "innerHTML"
-        attributes["hx-indicator"] = ".htmx-indicator"
-
-        hiddenInput {
-            name = "version"
-            value = version.toString()
-        }
-
-        missions.forEachIndexed { index, mission ->
-            button(classes = "choice-button secondary outline") {
-                type = ButtonType.submit
-                name = "choice"
-                value = (index + 1).toString()
-
-                val typeIndicator = when {
-                    mission.type.name.contains("ASYMMETRIC") -> " [ASYMMETRIC]"
-                    mission.type.name.contains("FIXED") -> " [FIXED]"
-                    else -> ""
-                }
-                +"${index + 1}. ${mission.name}$typeIndicator"
-            }
         }
     }
 }

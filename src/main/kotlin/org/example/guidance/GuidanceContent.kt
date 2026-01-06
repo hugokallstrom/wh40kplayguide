@@ -18,6 +18,12 @@ sealed class GuidanceContent {
     data class Paragraph(val text: String) : GuidanceContent()
 
     /**
+     * Text with markdown-like formatting support.
+     * Supports **bold** and *italic* formatting.
+     */
+    data class FormattedText(val text: String) : GuidanceContent()
+
+    /**
      * An unordered (bullet) list of items.
      */
     data class BulletList(val items: List<String>) : GuidanceContent()
