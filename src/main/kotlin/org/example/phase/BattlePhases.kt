@@ -159,6 +159,7 @@ data object MovementPhase : BattlePhaseMarker {
                 GuidanceContent.BulletList(listOf(
                     "To control an objective: Have more total OC than your opponent",
                     "Battle-shocked units have OC = 0",
+
                 ))
             ),
             variant = GuidanceContent.BoxVariant.REMINDER

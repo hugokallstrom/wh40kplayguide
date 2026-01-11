@@ -122,6 +122,12 @@ body {
     color: var(--color-text-primary);
     background: var(--color-bg-primary);
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+body > main {
+    flex: 1;
 }
 
 /* ----- Typography ----- */
