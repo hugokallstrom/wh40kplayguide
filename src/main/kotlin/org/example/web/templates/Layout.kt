@@ -621,31 +621,31 @@ li::marker {
 .hero-section {
     text-align: center;
     padding: var(--space-12) var(--space-6);
-    max-width: 640px;
+    max-width: 800px;
     margin: 0 auto;
 }
 
 .hero-section h1 {
     font-family: var(--font-heading);
-    font-size: 3rem;
+    font-size: 6rem;
     font-weight: 600;
     letter-spacing: -0.02em;
     line-height: 1.1;
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--space-4);
 }
 
 .hero-section h2 {
     font-family: var(--font-body);
-    font-size: 1.5rem;
+    font-size: 2.5rem;
     font-weight: 400;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    margin-bottom: var(--space-5);
+    margin-bottom: var(--space-6);
     color: var(--color-text-secondary);
 }
 
 .hero-section p {
-    font-size: 1.125rem;
+    font-size: 1.5rem;
     color: var(--color-text-muted);
     line-height: 1.6;
     margin-bottom: var(--space-8);
@@ -727,11 +727,15 @@ li::marker {
     }
 
     .hero-section h1 {
-        font-size: 2.25rem;
+        font-size: 3.5rem;
     }
 
     .hero-section h2 {
-        font-size: 1.25rem;
+        font-size: 1.75rem;
+    }
+
+    .hero-section p {
+        font-size: 1.125rem;
     }
 
     .phase-content {
