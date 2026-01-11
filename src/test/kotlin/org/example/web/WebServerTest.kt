@@ -23,7 +23,7 @@ class WebServerTest {
         val response = client.get("/")
         assertEquals(HttpStatusCode.OK, response.status)
         val body = response.bodyAsText()
-        assertTrue(body.contains("Warhammer 40,000"))
+        assertTrue(body.contains("WARHAMMER 40K"))
         assertTrue(body.contains("Game Guide"))
     }
 

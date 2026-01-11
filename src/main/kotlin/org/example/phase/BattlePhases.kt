@@ -45,6 +45,20 @@ data object CommandPhase : BattlePhaseMarker {
             "BATTLE-SHOCK TESTS - Test each unit that is Below Half-strength. Roll 2D6: pass if >= unit's best Leadership."
         )))
 
+        add(GuidanceContent.InfoBox(
+            title = "Don't Forget Your Command Points!",
+            content = listOf(
+                GuidanceContent.Paragraph("You now have CP to spend on Stratagems. Check your army's Stratagem cards!"),
+                GuidanceContent.BulletList(listOf(
+                    "Stratagems can be used in various phases (check timing)",
+                    "Most cost 1-2 CP",
+                    "Common: Fire Overwatch (enemy charges), Counter-offensive (fight phase)",
+                    "Many beginners finish games with unspent CP - use them!"
+                ))
+            ),
+            variant = GuidanceContent.BoxVariant.SUCCESS
+        ))
+
         // Show Tactical secondary mission rules for active player
         if (state.getSecondaryTypeForPlayer(state.activePlayerNumber) == SecondaryMissionType.TACTICAL) {
             val tacticalMessage = if (state.currentRound == 1) {
@@ -67,7 +81,7 @@ data object CommandPhase : BattlePhaseMarker {
             content = listOf(
                 GuidanceContent.Paragraph("Failed units are Battle-shocked until your next Command phase:"),
                 GuidanceContent.BulletList(listOf(
-                    "OC becomes 0",
+                    "OC becomes 0 (can't hold objectives!)",
                     "Cannot be affected by your Stratagems",
                     "Must take Desperate Escape tests if Falling Back"
                 ))
@@ -122,6 +136,33 @@ data object MovementPhase : BattlePhaseMarker {
             "ADVANCE" to "Move up to M+D6\" (cannot shoot or charge this turn)",
             "FALL BACK" to "Move up to M\" out of Engagement Range (cannot shoot or charge)"
         )))
+
+        add(GuidanceContent.InfoBox(
+            title = "Why Movement Matters",
+            content = listOf(
+                GuidanceContent.Paragraph("Movement is the most critical phase! Where you move determines:"),
+                GuidanceContent.BulletList(listOf(
+                    "What you can SHOOT (range and line of sight)",
+                    "What you can CHARGE (must be within 12\")",
+                    "What OBJECTIVES you control (must be within 3\")",
+                    "Whether you have COVER (+1 to armor saves)"
+                )),
+                GuidanceContent.Paragraph("Tip: You can pre-measure any distance at any time!")
+            ),
+            variant = GuidanceContent.BoxVariant.WARNING
+        ))
+
+        add(GuidanceContent.InfoBox(
+            title = "Objective Control (OC)",
+            content = listOf(
+                GuidanceContent.Paragraph("Each model has an OC value on its datasheet."),
+                GuidanceContent.BulletList(listOf(
+                    "To control an objective: Have more total OC than your opponent",
+                    "Battle-shocked units have OC = 0",
+                ))
+            ),
+            variant = GuidanceContent.BoxVariant.REMINDER
+        ))
 
         add(GuidanceContent.InfoBox(
             title = "Movement Rules",
@@ -238,6 +279,19 @@ data object ShootingPhase : BattlePhaseMarker {
             ),
             variant = GuidanceContent.BoxVariant.INFO
         ))
+
+        add(GuidanceContent.InfoBox(
+            title = "Check Your Datasheets!",
+            content = listOf(
+                GuidanceContent.Paragraph("Before shooting, review your unit's datasheet for special abilities:"),
+                GuidanceContent.BulletList(listOf(
+                    "Weapon abilities: ASSAULT (shoot after Advance), HEAVY (+1 hit if stationary), RAPID FIRE (extra attacks at half range)",
+                    "Unit abilities: Many units have unique shooting bonuses",
+                    "Leader abilities: Attached Leaders often buff their unit's shooting"
+                ))
+            ),
+            variant = GuidanceContent.BoxVariant.REMINDER
+        ))
     }
 
     override fun nextPhase(state: GameState): Phase = ChargePhase
@@ -281,7 +335,7 @@ data object ChargePhase : BattlePhaseMarker {
         )))
 
         add(GuidanceContent.KeyValue(listOf(
-            "SUCCESS" to "End move within Engagement Range of ALL targets",
+            "SUCCESS" to "End move within Engagement Range (1\") of ALL targets",
             "FAILURE" to "Unit does not move"
         )))
 
@@ -292,6 +346,22 @@ data object ChargePhase : BattlePhaseMarker {
             ),
             variant = GuidanceContent.BoxVariant.SUCCESS
         ))
+
+        // Show Deep Strike warning from round 2+ when reserves can arrive
+        if (state.currentRound >= 2) {
+            add(GuidanceContent.InfoBox(
+                title = "Deep Strike Charge Warning",
+                content = listOf(
+                    GuidanceContent.Paragraph("Units arriving from Deep Strike must set up 9\"+ away from enemies."),
+                    GuidanceContent.BulletList(listOf(
+                        "Average 2D6 roll = 7\" (only ~28% chance to make a 9\" charge!)",
+                        "Don't rely on Deep Strike charges without re-roll abilities",
+                        "Consider positioning Deep Strike units for shooting instead"
+                    ))
+                ),
+                variant = GuidanceContent.BoxVariant.WARNING
+            ))
+        }
     }
 
     override fun nextPhase(state: GameState): Phase = FightPhase
@@ -334,9 +404,24 @@ data object FightPhase : BattlePhaseMarker {
 
     override fun displayStructuredGuidance(state: GameState): List<GuidanceContent> = buildList {
         add(GuidanceContent.NumberedList(listOf(
-            "FIGHTS FIRST STEP - Units that charged this turn and units with Fights First ability. Alternate selecting units (starting with player whose turn it is NOT).",
-            "REMAINING COMBATS - All other eligible units. Alternate selecting (starting with player whose turn it is NOT)."
+            "FIGHTS FIRST STEP - Units that charged this turn and units with Fights First ability.",
+            "REMAINING COMBATS - All other eligible units in Engagement Range."
         )))
+
+        add(GuidanceContent.InfoBox(
+            title = "Alternation Order (Counter-intuitive!)",
+            content = listOf(
+                GuidanceContent.Paragraph("The player whose turn it is NOT selects first!"),
+                GuidanceContent.Paragraph("Example: It's Player 1's turn. Both players have charging units."),
+                GuidanceContent.BulletList(listOf(
+                    "Player 2 selects and fights with their first unit",
+                    "Player 1 selects and fights with their first unit",
+                    "Continue alternating until all Fights First units have fought",
+                    "Then do the same for Remaining Combats"
+                ))
+            ),
+            variant = GuidanceContent.BoxVariant.WARNING
+        ))
 
         add(GuidanceContent.Divider)
 
@@ -344,14 +429,14 @@ data object FightPhase : BattlePhaseMarker {
 
         add(GuidanceContent.KeyValue(listOf(
             "A. Pile In (3\")" to "Move each model up to 3\" closer to nearest enemy. Must end in Unit Coherency.",
-            "B. Make Melee Attacks" to "Must be within Engagement Range OR in base contact with friendly model that's in base contact with enemy.",
+            "B. Make Melee Attacks" to "Must be within Engagement Range (1\") OR in base contact with friendly model in base contact with enemy.",
             "C. Consolidate (3\")" to "Move up to 3\" closer to nearest enemy. Must end within Engagement Range if possible, or move toward closest objective."
         )))
 
         add(GuidanceContent.InfoBox(
             title = "Attack Sequence",
             content = listOf(
-                GuidanceContent.Paragraph("Same as shooting: Hit → Wound → Save → Damage")
+                GuidanceContent.Paragraph("Same as shooting: Hit (WS) → Wound → Save → Damage")
             ),
             variant = GuidanceContent.BoxVariant.REMINDER
         ))
@@ -393,10 +478,14 @@ data object EndOfTurnPhase : BattlePhaseMarker {
         // VP scoring from round 2 onwards
         if (state.currentRound >= 2) {
             add(GuidanceContent.InfoBox(
-                title = "VP Scoring",
+                title = "SCORE YOUR VP NOW - DON'T FORGET!",
                 content = listOf(
-                    GuidanceContent.Paragraph("Score VP from your **Primary** and **Secondary** missions."),
-                    GuidanceContent.Paragraph("Refer to your mission cards for scoring conditions.")
+                    GuidanceContent.Paragraph("Many games are lost because players forget to score. Check EACH mission card and score any points you've earned THIS TURN."),
+                    GuidanceContent.NumberedList(listOf(
+                        "Check your PRIMARY mission card - did you meet scoring conditions?",
+                        "Check your SECONDARY mission cards - did you complete any objectives?",
+                        "Write down your VP before moving on!"
+                    ))
                 ),
                 variant = GuidanceContent.BoxVariant.WARNING
             ))
@@ -412,6 +501,14 @@ data object EndOfTurnPhase : BattlePhaseMarker {
                     ))
                 ),
                 variant = GuidanceContent.BoxVariant.REMINDER
+            ))
+        } else {
+            add(GuidanceContent.InfoBox(
+                title = "No Scoring in Round 1",
+                content = listOf(
+                    GuidanceContent.Paragraph("VP scoring begins from Round 2. Use this round to position for objectives!")
+                ),
+                variant = GuidanceContent.BoxVariant.INFO
             ))
         }
 
@@ -528,7 +625,7 @@ data object EndGamePhase : BattlePhaseMarker {
         add(GuidanceContent.InfoBox(
             title = "Thank you for playing!",
             content = listOf(
-                GuidanceContent.Paragraph("We hope you enjoyed your game of Warhammer 40,000!")
+                GuidanceContent.Paragraph("We hope you enjoyed your game of Warhammer 40K!")
             ),
             variant = GuidanceContent.BoxVariant.SUCCESS
         ))

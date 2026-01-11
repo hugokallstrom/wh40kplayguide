@@ -186,20 +186,10 @@ sealed class SetupPhase : SetupPhaseMarker {
 
         override fun displayStructuredGuidance(state: GameState): List<GuidanceContent> = buildList {
             add(
-                GuidanceContent.InfoBox(
-                    title = "Attacker (Player ${state.attackerPlayerNumber})",
-                    content = listOf(
-                        GuidanceContent.Paragraph("Select your secondary mission type:")
-                    ),
-                    variant = GuidanceContent.BoxVariant.INFO
-                )
-            )
-
-            add(
                 GuidanceContent.KeyValue(
                     listOf(
-                        "1. Fixed" to "Choose specific missions that remain the same all game",
-                        "2. Tactical" to "Draw from a deck, replacing missions as you complete them"
+                        "1. Fixed" to "Choose 2 specific missions that stay the same all game (max 20VP each)",
+                        "2. Tactical" to "Draw from a deck, complete for 4-5VP each, draw replacements"
                     )
                 )
             )
@@ -237,20 +227,10 @@ sealed class SetupPhase : SetupPhaseMarker {
 
         override fun displayStructuredGuidance(state: GameState): List<GuidanceContent> = buildList {
             add(
-                GuidanceContent.InfoBox(
-                    title = "Defender (Player ${state.defenderPlayerNumber})",
-                    content = listOf(
-                        GuidanceContent.Paragraph("Select your secondary mission type:")
-                    ),
-                    variant = GuidanceContent.BoxVariant.INFO
-                )
-            )
-
-            add(
                 GuidanceContent.KeyValue(
                     listOf(
-                        "1. Fixed" to "Choose specific missions that remain the same all game",
-                        "2. Tactical" to "Draw from a deck, replacing missions as you complete them"
+                        "1. Fixed" to "Choose 2 specific missions that stay the same all game (max 20VP each)",
+                        "2. Tactical" to "Draw from a deck, complete for 4-5VP each, draw replacements"
                     )
                 )
             )
@@ -302,25 +282,24 @@ sealed class SetupPhase : SetupPhaseMarker {
                     listOf(
                         "Attached Leaders - Which Leader units will start attached to which Bodyguard units",
                         "Embarked Units - Which units will start embarked within Transport models",
-                        "Reserves - Which units will start in Reserves (including Strategic Reserves)"
+                        "Reserves - Which units will start in Reserves (arrive from Round 2)"
                     )
                 )
             )
 
             add(
                 GuidanceContent.InfoBox(
-                    title = "Strategic Reserves Rules",
+                    title = "Reserves Quick Reference",
                     content = listOf(
                         GuidanceContent.BulletList(
                             listOf(
-                                "Max 25% of army points in Strategic Reserves",
-                                "Deep Strike units can be set up in Reserves",
-                                "Arrive from Round 2+ (wholly within 6\" of battlefield edge)",
-                                "Round 2: Cannot enter enemy deployment zone"
+                                "Strategic Reserves: Max 25% of army points",
+                                "Deep Strike units can also be placed in Reserves",
+                                "All reserves arrive from Round 2 onwards"
                             )
                         )
                     ),
-                    variant = GuidanceContent.BoxVariant.REMINDER
+                    variant = GuidanceContent.BoxVariant.INFO
                 )
             )
 

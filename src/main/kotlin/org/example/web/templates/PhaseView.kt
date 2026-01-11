@@ -11,7 +11,7 @@ import org.example.web.SessionGameData
  */
 fun MAIN.renderHomePage(gameData: SessionGameData) {
     section(classes = "hero-section") {
-        h1 { +"Warhammer 40,000" }
+        h1 { +"WARHAMMER 40K" }
         h2 { +"Game Guide" }
         p { +"A step-by-step guide through the phases of battle" }
 
