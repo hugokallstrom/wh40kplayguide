@@ -695,6 +695,22 @@ li::marker {
     }
 }
 
+/* ----- Disclaimer Footer ----- */
+.disclaimer {
+    margin-top: var(--space-12);
+    padding: var(--space-6) 0;
+    border-top: 1px solid var(--color-border-light);
+    background: var(--color-bg-secondary);
+}
+
+.disclaimer p {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    text-align: center;
+    margin: var(--space-2) 0;
+    line-height: 1.5;
+}
+
 @media (max-width: 600px) {
     :root {
         --container-padding: var(--container-padding-mobile);
@@ -747,6 +763,19 @@ li::marker {
     body {
         main(classes = "container") {
             content()
+        }
+        footer(classes = "disclaimer") {
+            div(classes = "container") {
+                p {
+                    +"This is an unofficial fan-made tool and is not affiliated with, endorsed, sponsored, or approved by Games Workshop Limited."
+                }
+                p {
+                    +"Warhammer 40,000 and all associated marks, logos, and images are either ® or ™, and/or © Games Workshop Limited, variably registered around the world. All rights reserved."
+                }
+                p {
+                    +"This tool is intended as a play aid and does not replace the official rules. Please support Games Workshop by purchasing official products."
+                }
+            }
         }
     }
 }

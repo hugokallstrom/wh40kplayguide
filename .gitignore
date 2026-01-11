@@ -52,3 +52,6 @@ bin/
 
 ### PDF files ###
 *.pdf
+
+### Extracted rules content ###
+core_rules.txt
